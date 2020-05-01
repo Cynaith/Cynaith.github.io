@@ -2,9 +2,9 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Redis基本类型-字符类型 | Cynaith Blog</title>
-  <meta name="keywords" content=" Redis基本类型 ">
-  <meta name="description" content="Redis基本类型-字符类型 | Cynaith Blog">
+  <title>Redis数据结构-HyperLogLog | Cynaith Blog</title>
+  <meta name="keywords" content=" Redis数据结构 , HyperLogLog ">
+  <meta name="description" content="Redis数据结构-HyperLogLog | Cynaith Blog">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="description" content="缓存穿透 什么是缓存穿透 黑客不断请求缓存和数据库中不存在的数据  解决方案 当通过某一个key查数据时,如果对应的数据库和缓存中都不存在,则在缓存中设置此key为null,并设定一个失效时间。   布隆过滤器 理解: 长度为n的二进制向量,通过一系列随机映射函数(eg：多个Hash)将数据映射进布隆过滤器中。 优点: 存放的不是完整的数据,占用内存很少。新增、查询速度够快。 缺点: 随着数据量的">
 <meta property="og:type" content="article">
@@ -438,9 +438,9 @@
 </aside>
 <div class="post">
     <div class="pjax">
-        <article id="post-Redis基本类型-字符类型" class="article article-type-post" itemscope itemprop="blogPost">
+        <article id="post-Redis数据结构-HyperLogLog" class="article article-type-post" itemscope itemprop="blogPost">
     
-        <h1 class="article-title">Redis基本类型-字符类型</h1>
+        <h1 class="article-title">Redis数据结构-HyperLogLog</h1>
     
     <div class="article-meta">
         
@@ -455,19 +455,21 @@
         
         <span class="tag">
             
-            <a class="color5">Redis基本类型</a>
+            <a class="color5">Redis数据结构</a>
+            
+            <a class="color2">HyperLogLog</a>
             
         </span>
         
     </div>
     <div class="article-meta">
         
-        创建时间:<time class="date" title='更新时间: 2020-05-02 02:18:31'>2020-05-02 02:18</time>
+        创建时间:<time class="date" title='更新时间: 2020-05-02 02:40:47'>2020-05-02 02:34</time>
         
     </div>
     <div class="article-meta">
         
-        <span>字数:193</span>
+        <span>字数:108</span>
         
         
         <span id="busuanzi_container_page_pv">
@@ -497,7 +499,7 @@
     
     <div class="toc-ref">
     
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Java-操作字符类型"><span class="toc-text">Java 操作字符类型</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#用处"><span class="toc-text">用处</span></a></li></ol></li></ol></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#HyperLogLog"><span class="toc-text">HyperLogLog</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#基本用法"><span class="toc-text">基本用法</span></a></li></ol></li></ol></li></ol>
     
 <style>
     .left-col .switch-btn,
@@ -513,29 +515,20 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="Java-操作字符类型"><a href="#Java-操作字符类型" class="headerlink" title="Java 操作字符类型"></a>Java 操作字符类型</h2><ul>
-<li><strong>查看键为mykey的值是否存在:</strong> <code>jedis.exists(&quot;mykey&quot;);</code></li>
-<li><strong>键mykey的值为:</strong> <code>jedis.get(&quot;mykey&quot;);</code></li>
-<li><strong>查看键为mykey的类型:</strong> <code>jedis.type(&quot;mykey&quot;);</code></li>
-<li><strong>随机获得一个key:</strong> <code>jedis.randomKey(&quot;mykey&quot;);</code></li>
-<li><strong>将mykey重命名为mykey1:</strong> <code>jedis.rename(&quot;mykey&quot;,&quot;mykey1&quot;);</code></li>
-<li><strong>删除key “mykey”:</strong> <code>jedis.del(&quot;mykey&quot;);</code></li>
-</ul>
-<hr>
+        <h3 id="HyperLogLog"><a href="#HyperLogLog" class="headerlink" title="HyperLogLog"></a>HyperLogLog</h3><hr>
 <ul>
-<li><strong>设置name:</strong> <code>jedis.set(&quot;name&quot;,&quot;asd&quot;);</code></li>
-<li><strong>设置name,如果存在返回0:</strong> <code>jedis.setnx(&quot;name&quot;,&quot;asd&quot;);</code></li>
-<li><strong>获取key为name的值:</strong> <code>jedis.get(&quot;name&quot;)</code> </li>
-<li><strong>获取key为name和name1的value值:</strong> <code>jedis.mget(&quot;name&quot;,&quot;name1&quot;);</code></li>
-<li><strong>自增1:</strong> <code>jedis.incr(&quot;index&quot;)</code> </li>
-<li><strong>自增2:</strong> <code>jedis.inceBy(&quot;index&quot;)</code> </li>
-<li><strong>递减1:</strong> <code>jedis.decr(&quot;index&quot;)</code></li>
-<li><strong>递减2:</strong> <code>jedis.decrBy(&quot;index&quot;)</code></li>
-<li><strong>在name后添加String:</strong> <code>jedis.append(&quot;name&quot;,&quot;asd&quot;)</code></li>
+<li>什么时候需要用到HyperLogLog?<ul>
+<li>统计UV(去重不精确的计数业务)</li>
+</ul>
+</li>
 </ul>
 <hr>
-<h4 id="用处"><a href="#用处" class="headerlink" title="用处"></a>用处</h4><ul>
-<li>复杂的计数功能的缓存</li>
+<h5 id="基本用法"><a href="#基本用法" class="headerlink" title="基本用法"></a>基本用法</h5><ul>
+<li>HyperLogLog提供了两个指令<code>pfadd</code>(增加计数)、<code>pfcount</code>(获取计数)。<br>(pf是HyperLogLog数据结构的发明人Philippe Flajolet)<ul>
+<li>Demo  <figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379 &gt; pfadd codehole user1</span><br><span class="line"></span><br><span class="line">(integer) 1</span><br><span class="line"></span><br><span class="line">127.0.0.1:6379 &gt; pfadd codehole user2</span><br><span class="line"></span><br><span class="line">(integer) 1</span><br><span class="line"></span><br><span class="line">127.0.0.1:6379 &gt; pfcount codehole</span><br><span class="line"></span><br><span class="line">(integer) 2</span><br></pre></td></tr></table></figure></li>
+</ul>
+</li>
+<li><strong>pfmerge:</strong> 用于将多个pf计数值累加在一起形成一个新的pf值</li>
 </ul>
 
       
@@ -550,12 +543,12 @@
 
 
 <div class="article_copyright">
-    <p><span class="copy-title">文章标题:</span>Redis基本类型-字符类型</p>
-    <p><span class="copy-title">文章字数:</span><span class="post-count">193</span></p>
+    <p><span class="copy-title">文章标题:</span>Redis数据结构-HyperLogLog</p>
+    <p><span class="copy-title">文章字数:</span><span class="post-count">108</span></p>
     <p><span class="copy-title">本文作者:</span><a  title="Cynaith">Cynaith</a></p>
-    <p><span class="copy-title">发布时间:</span>2020-05-02, 02:18:02</p>
-    <p><span class="copy-title">最后更新:</span>2020-05-02, 02:18:31</p>
-    <span class="copy-title">原始链接:</span><a class="post-url" href="/2020/05/02/Redis%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B-%E5%AD%97%E7%AC%A6%E7%B1%BB%E5%9E%8B/" title="Redis基本类型-字符类型">https://cynaith.github.io/2020/05/02/Redis%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B-%E5%AD%97%E7%AC%A6%E7%B1%BB%E5%9E%8B/</a>
+    <p><span class="copy-title">发布时间:</span>2020-05-02, 02:34:16</p>
+    <p><span class="copy-title">最后更新:</span>2020-05-02, 02:40:47</p>
+    <span class="copy-title">原始链接:</span><a class="post-url" href="/2020/05/02/Redis%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-HyperLogLog/" title="Redis数据结构-HyperLogLog">https://cynaith.github.io/2020/05/02/Redis%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-HyperLogLog/</a>
     <p>
         <span class="copy-title">版权声明:</span><i class="fa fa-creative-commons"></i> <a rel="license noopener" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。
     </p>

@@ -2,9 +2,9 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Redis基本类型-字符类型 | Cynaith Blog</title>
-  <meta name="keywords" content=" Redis基本类型 ">
-  <meta name="description" content="Redis基本类型-字符类型 | Cynaith Blog">
+  <title>Redis数据结构-快速链表 | Cynaith Blog</title>
+  <meta name="keywords" content=" Redis数据结构 , 快速链表 ">
+  <meta name="description" content="Redis数据结构-快速链表 | Cynaith Blog">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="description" content="缓存穿透 什么是缓存穿透 黑客不断请求缓存和数据库中不存在的数据  解决方案 当通过某一个key查数据时,如果对应的数据库和缓存中都不存在,则在缓存中设置此key为null,并设定一个失效时间。   布隆过滤器 理解: 长度为n的二进制向量,通过一系列随机映射函数(eg：多个Hash)将数据映射进布隆过滤器中。 优点: 存放的不是完整的数据,占用内存很少。新增、查询速度够快。 缺点: 随着数据量的">
 <meta property="og:type" content="article">
@@ -438,9 +438,9 @@
 </aside>
 <div class="post">
     <div class="pjax">
-        <article id="post-Redis基本类型-字符类型" class="article article-type-post" itemscope itemprop="blogPost">
+        <article id="post-Redis数据结构-快速链表" class="article article-type-post" itemscope itemprop="blogPost">
     
-        <h1 class="article-title">Redis基本类型-字符类型</h1>
+        <h1 class="article-title">Redis数据结构-快速链表</h1>
     
     <div class="article-meta">
         
@@ -455,19 +455,21 @@
         
         <span class="tag">
             
-            <a class="color5">Redis基本类型</a>
+            <a class="color5">Redis数据结构</a>
+            
+            <a class="color5">快速链表</a>
             
         </span>
         
     </div>
     <div class="article-meta">
         
-        创建时间:<time class="date" title='更新时间: 2020-05-02 02:18:31'>2020-05-02 02:18</time>
+        创建时间:<time class="date" title='更新时间: 2020-05-02 02:39:28'>2020-05-02 02:33</time>
         
     </div>
     <div class="article-meta">
         
-        <span>字数:193</span>
+        <span>字数:442</span>
         
         
         <span id="busuanzi_container_page_pv">
@@ -497,7 +499,7 @@
     
     <div class="toc-ref">
     
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Java-操作字符类型"><span class="toc-text">Java 操作字符类型</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#用处"><span class="toc-text">用处</span></a></li></ol></li></ol></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Java-操作列表类型-类似于LinkedList"><span class="toc-text">Java 操作列表类型(类似于LinkedList)</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#用处"><span class="toc-text">用处</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#深入"><span class="toc-text">深入</span></a></li></ol></li></ol></li></ol>
     
 <style>
     .left-col .switch-btn,
@@ -513,29 +515,36 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="Java-操作字符类型"><a href="#Java-操作字符类型" class="headerlink" title="Java 操作字符类型"></a>Java 操作字符类型</h2><ul>
-<li><strong>查看键为mykey的值是否存在:</strong> <code>jedis.exists(&quot;mykey&quot;);</code></li>
-<li><strong>键mykey的值为:</strong> <code>jedis.get(&quot;mykey&quot;);</code></li>
-<li><strong>查看键为mykey的类型:</strong> <code>jedis.type(&quot;mykey&quot;);</code></li>
-<li><strong>随机获得一个key:</strong> <code>jedis.randomKey(&quot;mykey&quot;);</code></li>
-<li><strong>将mykey重命名为mykey1:</strong> <code>jedis.rename(&quot;mykey&quot;,&quot;mykey1&quot;);</code></li>
-<li><strong>删除key “mykey”:</strong> <code>jedis.del(&quot;mykey&quot;);</code></li>
-</ul>
-<hr>
-<ul>
-<li><strong>设置name:</strong> <code>jedis.set(&quot;name&quot;,&quot;asd&quot;);</code></li>
-<li><strong>设置name,如果存在返回0:</strong> <code>jedis.setnx(&quot;name&quot;,&quot;asd&quot;);</code></li>
-<li><strong>获取key为name的值:</strong> <code>jedis.get(&quot;name&quot;)</code> </li>
-<li><strong>获取key为name和name1的value值:</strong> <code>jedis.mget(&quot;name&quot;,&quot;name1&quot;);</code></li>
-<li><strong>自增1:</strong> <code>jedis.incr(&quot;index&quot;)</code> </li>
-<li><strong>自增2:</strong> <code>jedis.inceBy(&quot;index&quot;)</code> </li>
-<li><strong>递减1:</strong> <code>jedis.decr(&quot;index&quot;)</code></li>
-<li><strong>递减2:</strong> <code>jedis.decrBy(&quot;index&quot;)</code></li>
-<li><strong>在name后添加String:</strong> <code>jedis.append(&quot;name&quot;,&quot;asd&quot;)</code></li>
+        <h2 id="Java-操作列表类型-类似于LinkedList"><a href="#Java-操作列表类型-类似于LinkedList" class="headerlink" title="Java 操作列表类型(类似于LinkedList)"></a>Java 操作列表类型(类似于LinkedList)</h2><ul>
+<li><strong>在列表头部添加数据:</strong> <code>jedis.lpush(&quot;list&quot;, &quot;xiaoming&quot;,&quot;age&quot;,&quot;20&quot;,&quot;address&quot;,&quot;beijing&quot;);</code></li>
+<li><strong>在列表尾部添加数据:</strong> <code>jedis.rpush(&quot;height&quot;,&quot;170cm&quot;,&quot;hobby&quot;,&quot;dance&quot;);</code></li>
+<li><strong>列表长度:</strong> <code>jedis.llen(&quot;list&quot;)</code></li>
+<li><strong>列表list下标为2的元素:</strong> <code>jedis.lindex(&quot;list&quot;,2);</code></li>
+<li><strong>移除一个元素:</strong> <code>jedis.lrem(&quot;list&quot;,1,&quot;age&quot;)</code></li>
+<li><strong>将列表key下标为index的元素值设置为value:</strong> <code>jedis.lset(&quot;list&quot;,5,&quot;hello world&quot;);</code></li>
+<li><strong>移除并返回list尾元素:</strong> <code>jedis.rpop(&quot;list&quot;);</code></li>
+<li>取值<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">List&lt;String&gt; list = jedis.lrange(<span class="string">"list"</span>,<span class="number">0</span>,-<span class="number">1</span>);</span><br><span class="line"><span class="keyword">for</span>(String str:list)&#123;</span><br><span class="line">    System.out.println(str);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
 </ul>
 <hr>
 <h4 id="用处"><a href="#用处" class="headerlink" title="用处"></a>用处</h4><ul>
-<li>复杂的计数功能的缓存</li>
+<li>简单的消息队列</li>
+<li>利用lrange命令，做基于redis的分页功能</li>
+</ul>
+<hr>
+<h4 id="深入"><a href="#深入" class="headerlink" title="深入"></a>深入</h4><ul>
+<li>Redis底层存储是”快速链表(quickList)”结构<ul>
+<li>在<font color=#FF2941>列表元素较少</font>的情况下,会使用一块连续的内存存储,这个结构是ziplist(压缩列表)。</li>
+<li><font color=#FF2941>数据量多</font>时改为quicklist。</li>
+<li>Redis将链表和ziplist结合起来组成了quicklist,将多个ziplist使用双向指针串起来使用</li>
+<li>使用List作为异步消息队列<ul>
+<li><strong>问题1:</strong> 队列空了怎么办?<br><br>&emsp;&emsp;&emsp;&nbsp;<br>当队列为空时,客户端就会陷入空轮询的pop-&gt;无数据-&gt;pop的死循环中。<br>所以采用堵塞读方法  <code>blpop</code>和<code>brpop</code><br>堵塞读在队列没有数据时,会立即进入休眠状态,一旦数据到来,则立刻醒过来。消息延迟几乎为0</li>
+<li><strong>问题2:</strong> 空闲链接自动断开<br><br>&emsp;&emsp;&emsp;&nbsp;<br>如果线程一直堵塞在那里,Redis的客户端就成了闲置连接,闲置过久,服务器一般会主动断开,减少闲置资源占用。<br>这时blpop/brpop会抛出异常。</li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 
       
@@ -550,12 +559,12 @@
 
 
 <div class="article_copyright">
-    <p><span class="copy-title">文章标题:</span>Redis基本类型-字符类型</p>
-    <p><span class="copy-title">文章字数:</span><span class="post-count">193</span></p>
+    <p><span class="copy-title">文章标题:</span>Redis数据结构-快速链表</p>
+    <p><span class="copy-title">文章字数:</span><span class="post-count">442</span></p>
     <p><span class="copy-title">本文作者:</span><a  title="Cynaith">Cynaith</a></p>
-    <p><span class="copy-title">发布时间:</span>2020-05-02, 02:18:02</p>
-    <p><span class="copy-title">最后更新:</span>2020-05-02, 02:18:31</p>
-    <span class="copy-title">原始链接:</span><a class="post-url" href="/2020/05/02/Redis%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B-%E5%AD%97%E7%AC%A6%E7%B1%BB%E5%9E%8B/" title="Redis基本类型-字符类型">https://cynaith.github.io/2020/05/02/Redis%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B-%E5%AD%97%E7%AC%A6%E7%B1%BB%E5%9E%8B/</a>
+    <p><span class="copy-title">发布时间:</span>2020-05-02, 02:33:52</p>
+    <p><span class="copy-title">最后更新:</span>2020-05-02, 02:39:28</p>
+    <span class="copy-title">原始链接:</span><a class="post-url" href="/2020/05/02/Redis%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E5%BF%AB%E9%80%9F%E9%93%BE%E8%A1%A8/" title="Redis数据结构-快速链表">https://cynaith.github.io/2020/05/02/Redis%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-%E5%BF%AB%E9%80%9F%E9%93%BE%E8%A1%A8/</a>
     <p>
         <span class="copy-title">版权声明:</span><i class="fa fa-creative-commons"></i> <a rel="license noopener" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。
     </p>
