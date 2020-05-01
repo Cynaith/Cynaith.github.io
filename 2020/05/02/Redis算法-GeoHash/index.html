@@ -2,9 +2,9 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Redis扩展类型-位图 | Cynaith Blog</title>
-  <meta name="keywords" content=" Redis基本类型 ">
-  <meta name="description" content="Redis扩展类型-位图 | Cynaith Blog">
+  <title>Redis算法-GeoHash | Cynaith Blog</title>
+  <meta name="keywords" content=" Redis算法 , 坐标定位算法 , GeoHash ">
+  <meta name="description" content="Redis算法-GeoHash | Cynaith Blog">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="description" content="Redis算法 数据快速查询算法 scan  Scan  如何从海量的key中找出满足特定前缀的key列表?  keys * : 获取全部key keys sth* : 获取前缀为sth的key keys sth*sth : 获取前缀和后缀为sth的key 缺点:1. 没有offset、limit参数2. 复杂度为O(n)   scan的特点  复杂度虽然也是O(n),但它是通过游标分步进行的,">
 <meta property="og:type" content="article">
@@ -463,9 +463,9 @@
 </aside>
 <div class="post">
     <div class="pjax">
-        <article id="post-Redis扩展类型-位图" class="article article-type-post" itemscope itemprop="blogPost">
+        <article id="post-Redis算法-GeoHash" class="article article-type-post" itemscope itemprop="blogPost">
     
-        <h1 class="article-title">Redis扩展类型-位图</h1>
+        <h1 class="article-title">Redis算法-GeoHash</h1>
     
     <div class="article-meta">
         
@@ -480,19 +480,23 @@
         
         <span class="tag">
             
-            <a class="color5">Redis基本类型</a>
+            <a class="color3">Redis算法</a>
+            
+            <a class="color2">坐标定位算法</a>
+            
+            <a class="color3">GeoHash</a>
             
         </span>
         
     </div>
     <div class="article-meta">
         
-        创建时间:<time class="date" title='更新时间: 2020-05-02 02:22:57'>2020-05-02 02:20</time>
+        创建时间:<time class="date" title='更新时间: 2020-05-02 02:42:24'>2020-05-02 02:41</time>
         
     </div>
     <div class="article-meta">
         
-        <span>字数:501</span>
+        <span>字数:686</span>
         
         
         <span id="busuanzi_container_page_pv">
@@ -522,7 +526,7 @@
     
     <div class="toc-ref">
     
-        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#位图"><span class="toc-text">位图</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#基本用法"><span class="toc-text">基本用法</span></a></li></ol></li></ol></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#GeoHash"><span class="toc-text">GeoHash</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#基本用法"><span class="toc-text">基本用法</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#注"><span class="toc-text">注</span></a></li></ol></li></ol></li></ol>
     
 <style>
     .left-col .switch-btn,
@@ -538,51 +542,43 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="位图"><a href="#位图" class="headerlink" title="位图"></a>位图</h3><hr>
+        <h3 id="GeoHash"><a href="#GeoHash" class="headerlink" title="GeoHash"></a>GeoHash</h3><hr>
 <ul>
-<li>什么时候需要用到位图?<ul>
-<li>平时开发中有一些bool型数据需要存储,比如用户一年的签到记录。为了解决存储空间,Redis提供了位图数据结构,这样365天就是365位,46个字节。</li>
+<li>什么是GeoHash算法?<ul>
+<li>通用的地理位置距离排序算法</li>
 </ul>
 </li>
-<li>位图是什么?<ul>
-<li>其实就是普通的字符串,也就是byte数组。</li>
-</ul>
-</li>
-<li>怎么使用位图?<ul>
-<li>可以使用普通的get/set直接获取和设置整个位图的内容,也可以使用位图操作getbit/setbit等将byte数组看成”位数组”来处理。</li>
+<li>原理<ul>
+<li>GeoHash算法将二维的经纬度数据映射到一维的整数,这样所有的元素都将挂载到一条线上,距离靠近的二维坐标映射到一维后的点之间距离也会很接近。</li>
 </ul>
 </li>
 </ul>
 <hr>
 <h5 id="基本用法"><a href="#基本用法" class="headerlink" title="基本用法"></a>基本用法</h5><ul>
-<li><p>Redis的位数组是自动扩展的,如果设置了某个偏移位置超出了现有的内容范围,就会自动将位数组进行零扩充。</p>
+<li>增加<ul>
+<li>geoadd指令携带集合名称以及<font color=#ff4911>多个</font>经纬度名称三元组</li>
+<li>Demo  <figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line">        127.0.0.1:6379 &gt; geoadd company 116.48105 39.996794 juejin</span><br><span class="line">        </span><br><span class="line">        (integer) 1</span><br><span class="line">        </span><br><span class="line">        127.0.0.1:6379 &gt; geoadd company 116.514203 39.905409 ireader</span><br><span class="line">        </span><br><span class="line">        (integer) 1</span><br><span class="line">        </span><br><span class="line">        127.0.0.1:6379 &gt; geoadd company 116.489033 40.007669 meituan</span><br><span class="line">        </span><br><span class="line">        (integer) 1</span><br><span class="line">        </span><br><span class="line">        127.0.0.1:6379 &gt; geoadd company 116.562108 39.787602 jd 116.334255 40.027400 xiaomi</span><br><span class="line">        </span><br><span class="line">        (integer) 2</span><br><span class="line">        ```  </span><br><span class="line">* 距离</span><br><span class="line">    * geolist指令可以用来计算两个元素之间的距离,携带集合名称、两个名称和距离单位  </span><br><span class="line">    * Demo</span><br><span class="line">        ```shell script</span><br><span class="line">        127.0.0.1:6379 &gt; geodist company juejin ireader km</span><br><span class="line">        </span><br><span class="line">        "10.5501"</span><br><span class="line">        </span><br><span class="line">        127.0.0.1:6379&gt; geodist company juejin meituan km</span><br><span class="line">        </span><br><span class="line">        "1.3878"</span><br><span class="line">        </span><br><span class="line">        127.0.0.1:6379&gt; geodist company juejin jd km</span><br><span class="line">        </span><br><span class="line">        "24.2739"</span><br><span class="line">        </span><br><span class="line">        127.0.0.1:6379&gt; geodist company juejin juejin km</span><br><span class="line">        </span><br><span class="line">        "0.0000"</span><br><span class="line">        ``` </span><br><span class="line">* 获取元素位置</span><br><span class="line">    * geopos指令可以获取集合中任意元素的经纬度坐标,可以一次获取多个。</span><br><span class="line">    * Demo</span><br><span class="line">        ```shell script</span><br><span class="line">        127.0.0.1:6379 &gt; geopos company juejin</span><br><span class="line"></span><br><span class="line">        1) 1) "116.48104995489120483"</span><br><span class="line">             2) "39.99679348858259686"</span><br><span class="line">           </span><br><span class="line">        127.0.0.1:6379 &gt; geopos company ireader</span><br><span class="line">        </span><br><span class="line">        1) 1) "116.5142020583152771"</span><br><span class="line">             2) "39.90540918662494363"</span><br><span class="line">             </span><br><span class="line">        127.0.0.1:6379 &gt; geopos company meituan xiaomi</span><br><span class="line">        </span><br><span class="line">        1) 1) "116.48903220891952515"</span><br><span class="line">             2) "40.00766997707732031"</span><br><span class="line">        2) 1) "116.33425265550613403"</span><br><span class="line">             2) "40.02740024658161389"</span><br><span class="line">        ```      </span><br><span class="line">* 获取元素hash值</span><br><span class="line">    * GeoHash可以获取元素的经纬度编码字符串,上面已经提到,他是base32编码。</span><br><span class="line">    你可以使用这个编码值去[http://geohash.org/$&#123;hash&#125;](http://geohash.org)上进行定位     </span><br><span class="line">    * Demo </span><br><span class="line">        ```shell script</span><br><span class="line">            127.0.0.1:6379&gt; geohash company ireader</span><br><span class="line">      </span><br><span class="line">            1) "wx4g52e1ce0"</span><br></pre></td></tr></table></figure>
+  <a href="http://geohash.org/wx4g52e1ce0" target="_blank" rel="noopener">http://geohash.org/wx4g52e1ce0</a></li>
+</ul>
 </li>
-<li><p>零存整取</p>
+<li>附近的member<ul>
+<li><code>georadiusbymember</code>指令是最为关键的指令之一,它可以用来查询指定元素附近的其他元素。</li>
+<li>Demo  <figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379 &gt; georadiusbymember company ireader 20 km count 3 asc</span><br><span class="line"></span><br><span class="line">1) "ireader"</span><br><span class="line">2) "juejin"</span><br><span class="line">3) "meituan"</span><br><span class="line"></span><br><span class="line">127.0.0.1:6379 &gt; georadiusbymember company ireader 20 km count 3 desc</span><br><span class="line"></span><br><span class="line">1) "jd"</span><br><span class="line">2) "meituan"</span><br><span class="line">3) "juejin"</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">三个可选参数 withcoord、withdist、withhash用来携带附加参数</span></span><br><span class="line">127.0.0.1:6379 &gt; georadiusbymember company ireader 20 km withcoord withdist withhash count 3 asc</span><br><span class="line"></span><br><span class="line">1) 1) "ireader"</span><br><span class="line">     2) "0.0000"</span><br><span class="line">     3) (integer) 4069886008361398</span><br><span class="line">     4) 1) "116.5142020583152771"</span><br><span class="line">          2) "39.90540918662494363"</span><br><span class="line">2) 1) "juejin"</span><br><span class="line">     2) "10.5501"</span><br><span class="line">     3) (integer) 4069887154388167</span><br><span class="line">     4) 1) "116.48104995489120483"</span><br><span class="line">          2) "39.99679348858259686"</span><br><span class="line">3) 1) "meituan"</span><br><span class="line">     2) "11.5748"</span><br><span class="line">     3) (integer) 4069887179083478</span><br><span class="line">     4) 1) "116.48903220891952515"</span><br><span class="line">          2) "40.00766997707732031"</span><br></pre></td></tr></table></figure>
 <ul>
-<li>h的ASCII码:0b1101000<br>e的ASCII码:0b1100101  <figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; setbit s 1 1</span><br><span class="line">(integer) 0</span><br><span class="line">127.0.0.1:6379&gt; setbit s 2 1</span><br><span class="line">(integer) 0</span><br><span class="line">127.0.0.1:6379&gt; setbit s 4 1</span><br><span class="line">(integer) 0</span><br><span class="line">127.0.0.1:6379&gt; setbit s 9 1</span><br><span class="line">(integer) 0</span><br><span class="line">127.0.0.1:6379&gt; setbit s 10 1</span><br><span class="line">(integer) 0</span><br><span class="line">127.0.0.1:6379&gt; setbit s 13 1</span><br><span class="line">(integer) 0</span><br><span class="line">127.0.0.1:6379&gt; setbit s 15 1</span><br><span class="line">(integer) 0</span><br><span class="line">127.0.0.1:6379&gt; get s</span><br><span class="line">"he"</span><br></pre></td></tr></table></figure></li>
+<li>除了georadiusbymember,Redis还提供了根据坐标查询附近元素的指令<code>georadius</code></li>
+<li>Demo  <figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; georadius company 116.514 39.905 20 km count 3 desc</span><br><span class="line"></span><br><span class="line">1) "jd"</span><br><span class="line">2) "meituan"</span><br><span class="line">3) "juejin"</span><br></pre></td></tr></table></figure>
+
+</li>
 </ul>
 </li>
-<li><p>整存零取</p>
-<ul>
-<li>h的ASCII码:0b1101000  <figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; set w h</span><br><span class="line">(integer) 0</span><br><span class="line">127.0.0.1:6379&gt; getbit w 1</span><br><span class="line">(integer) 1</span><br><span class="line">127.0.0.1:6379&gt; getbit w 2</span><br><span class="line">(integer) 1</span><br></pre></td></tr></table></figure></li>
 </ul>
 </li>
-<li><p>如果对应位的字节是不可打印字符,redis-cli会显示该字符的十六进制形式</p>
-</li>
-<li><p>Redis提供了位图统计指令bitcount和位图查找指令bitpos</p>
-<ul>
-<li><strong>bitcount:</strong> 用来统计指定位置范围内的1的个数。<ul>
-<li>统计用户一共签到多少天</li>
 </ul>
-</li>
-<li><strong>bitpos:</strong> 用来查找指定范围内出现的第一个0或1。  <ul>
-<li>查找用户从哪一天开始第一次签到。 </li>
-</ul>
-</li>
-<li>如果指定范围参数[start,end],就可以统计在某个时间范围内用户签到了多少天，用户自某天以后哪天开始签到</li>
-<li>但start和end是字节索引,所以指定的位范围必须是<font color=#ff4911>8的倍数</font></li>
-</ul>
-</li>
+<hr>
+<h5 id="注"><a href="#注" class="headerlink" title="注"></a>注</h5><ul>
+<li>GeoHash只是一个普通的SortedSet,使用<code>zrem</code>指令可删除元素</li>
+<li>建议Geo数据使用单独的实例部署,不使用集群环境</li>
+<li>数据量过大应拆分Geo数据</li>
 </ul>
 
       
@@ -597,12 +593,12 @@
 
 
 <div class="article_copyright">
-    <p><span class="copy-title">文章标题:</span>Redis扩展类型-位图</p>
-    <p><span class="copy-title">文章字数:</span><span class="post-count">501</span></p>
+    <p><span class="copy-title">文章标题:</span>Redis算法-GeoHash</p>
+    <p><span class="copy-title">文章字数:</span><span class="post-count">686</span></p>
     <p><span class="copy-title">本文作者:</span><a  title="Cynaith">Cynaith</a></p>
-    <p><span class="copy-title">发布时间:</span>2020-05-02, 02:20:35</p>
-    <p><span class="copy-title">最后更新:</span>2020-05-02, 02:22:57</p>
-    <span class="copy-title">原始链接:</span><a class="post-url" href="/2020/05/02/Redis%E6%89%A9%E5%B1%95%E7%B1%BB%E5%9E%8B-%E4%BD%8D%E5%9B%BE/" title="Redis扩展类型-位图">https://cynaith.github.io/2020/05/02/Redis%E6%89%A9%E5%B1%95%E7%B1%BB%E5%9E%8B-%E4%BD%8D%E5%9B%BE/</a>
+    <p><span class="copy-title">发布时间:</span>2020-05-02, 02:41:33</p>
+    <p><span class="copy-title">最后更新:</span>2020-05-02, 02:42:24</p>
+    <span class="copy-title">原始链接:</span><a class="post-url" href="/2020/05/02/Redis%E7%AE%97%E6%B3%95-GeoHash/" title="Redis算法-GeoHash">https://cynaith.github.io/2020/05/02/Redis%E7%AE%97%E6%B3%95-GeoHash/</a>
     <p>
         <span class="copy-title">版权声明:</span><i class="fa fa-creative-commons"></i> <a rel="license noopener" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。
     </p>

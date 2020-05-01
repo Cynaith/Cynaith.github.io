@@ -2,9 +2,9 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Redis扩展类型-位图 | Cynaith Blog</title>
-  <meta name="keywords" content=" Redis基本类型 ">
-  <meta name="description" content="Redis扩展类型-位图 | Cynaith Blog">
+  <title>Redis算法-scan | Cynaith Blog</title>
+  <meta name="keywords" content="">
+  <meta name="description" content="Redis算法-scan | Cynaith Blog">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="description" content="Redis算法 数据快速查询算法 scan  Scan  如何从海量的key中找出满足特定前缀的key列表?  keys * : 获取全部key keys sth* : 获取前缀为sth的key keys sth*sth : 获取前缀和后缀为sth的key 缺点:1. 没有offset、limit参数2. 复杂度为O(n)   scan的特点  复杂度虽然也是O(n),但它是通过游标分步进行的,">
 <meta property="og:type" content="article">
@@ -463,9 +463,9 @@
 </aside>
 <div class="post">
     <div class="pjax">
-        <article id="post-Redis扩展类型-位图" class="article article-type-post" itemscope itemprop="blogPost">
+        <article id="post-Redis算法-scan" class="article article-type-post" itemscope itemprop="blogPost">
     
-        <h1 class="article-title">Redis扩展类型-位图</h1>
+        <h1 class="article-title">Redis算法-scan</h1>
     
     <div class="article-meta">
         
@@ -478,21 +478,15 @@
         </span>
         
         
-        <span class="tag">
-            
-            <a class="color5">Redis基本类型</a>
-            
-        </span>
+    </div>
+    <div class="article-meta">
+        
+        创建时间:<time class="date" title='更新时间: 2020-05-02 02:43:00'>2020-05-02 02:41</time>
         
     </div>
     <div class="article-meta">
         
-        创建时间:<time class="date" title='更新时间: 2020-05-02 02:22:57'>2020-05-02 02:20</time>
-        
-    </div>
-    <div class="article-meta">
-        
-        <span>字数:501</span>
+        <span>字数:423</span>
         
         
         <span id="busuanzi_container_page_pv">
@@ -522,7 +516,7 @@
     
     <div class="toc-ref">
     
-        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#位图"><span class="toc-text">位图</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#基本用法"><span class="toc-text">基本用法</span></a></li></ol></li></ol></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Scan"><span class="toc-text">Scan</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#基本用法"><span class="toc-text">基本用法</span></a></li></ol></li></ol></li></ol>
     
 <style>
     .left-col .switch-btn,
@@ -538,49 +532,46 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="位图"><a href="#位图" class="headerlink" title="位图"></a>位图</h3><hr>
+        <ul>
+<li>Redis算法</li>
+<li>数据快速查询算法</li>
+<li>scan</li>
+</ul>
+<h3 id="Scan"><a href="#Scan" class="headerlink" title="Scan"></a>Scan</h3><hr>
 <ul>
-<li>什么时候需要用到位图?<ul>
-<li>平时开发中有一些bool型数据需要存储,比如用户一年的签到记录。为了解决存储空间,Redis提供了位图数据结构,这样365天就是365位,46个字节。</li>
+<li><p>如何从海量的key中找出满足特定前缀的key列表?</p>
+<ul>
+<li><code>keys *</code> : 获取全部key</li>
+<li><code>keys sth*</code> : 获取前缀为sth的key</li>
+<li><code>keys sth*sth</code> : 获取前缀和后缀为sth的key</li>
+<li>缺点:<br><br>1. 没有offset、limit参数<br><br>2. 复杂度为O(n)</li>
 </ul>
 </li>
-<li>位图是什么?<ul>
-<li>其实就是普通的字符串,也就是byte数组。</li>
-</ul>
-</li>
-<li>怎么使用位图?<ul>
-<li>可以使用普通的get/set直接获取和设置整个位图的内容,也可以使用位图操作getbit/setbit等将byte数组看成”位数组”来处理。</li>
+<li><p>scan的特点</p>
+<ul>
+<li>复杂度虽然也是O(n),但它是通过游标分步进行的,不会堵塞线程。</li>
+<li>提供limit参数,可以控制每次返回结果的最大条数</li>
+<li>同keys一样,它也提供模式匹配功能。</li>
+<li>服务器不需要为游标保存状态,游标唯一状态就是scan返回给客户端的游标整数。</li>
+<li><font color= #ff4911>返回的数据可能会有重复,需要客户端去重</font></li>
+<li>遍历过程中如果有数据修改,改动后的数据能不能遍历是不确定的。</li>
+<li>单次返回的结果是空的并不意味着遍历结束,而要看返回的游标值是否为零。</li>
 </ul>
 </li>
 </ul>
 <hr>
 <h5 id="基本用法"><a href="#基本用法" class="headerlink" title="基本用法"></a>基本用法</h5><ul>
-<li><p>Redis的位数组是自动扩展的,如果设置了某个偏移位置超出了现有的内容范围,就会自动将位数组进行零扩充。</p>
-</li>
-<li><p>零存整取</p>
-<ul>
-<li>h的ASCII码:0b1101000<br>e的ASCII码:0b1100101  <figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; setbit s 1 1</span><br><span class="line">(integer) 0</span><br><span class="line">127.0.0.1:6379&gt; setbit s 2 1</span><br><span class="line">(integer) 0</span><br><span class="line">127.0.0.1:6379&gt; setbit s 4 1</span><br><span class="line">(integer) 0</span><br><span class="line">127.0.0.1:6379&gt; setbit s 9 1</span><br><span class="line">(integer) 0</span><br><span class="line">127.0.0.1:6379&gt; setbit s 10 1</span><br><span class="line">(integer) 0</span><br><span class="line">127.0.0.1:6379&gt; setbit s 13 1</span><br><span class="line">(integer) 0</span><br><span class="line">127.0.0.1:6379&gt; setbit s 15 1</span><br><span class="line">(integer) 0</span><br><span class="line">127.0.0.1:6379&gt; get s</span><br><span class="line">"he"</span><br></pre></td></tr></table></figure></li>
+<li>scan提供三个参数<ul>
+<li><strong>cursor:</strong> 游标位置,第一次遍历时cursor为0,然后将返回的游标作为下一次遍历的cursor,一直到返回的cursor为0</li>
+<li><strong>key正则表模式</strong></li>
+<li><strong>遍历的limit hint:</strong> 一次遍历多少次</li>
 </ul>
 </li>
-<li><p>整存零取</p>
-<ul>
-<li>h的ASCII码:0b1101000  <figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; set w h</span><br><span class="line">(integer) 0</span><br><span class="line">127.0.0.1:6379&gt; getbit w 1</span><br><span class="line">(integer) 1</span><br><span class="line">127.0.0.1:6379&gt; getbit w 2</span><br><span class="line">(integer) 1</span><br></pre></td></tr></table></figure></li>
-</ul>
-</li>
-<li><p>如果对应位的字节是不可打印字符,redis-cli会显示该字符的十六进制形式</p>
-</li>
-<li><p>Redis提供了位图统计指令bitcount和位图查找指令bitpos</p>
-<ul>
-<li><strong>bitcount:</strong> 用来统计指定位置范围内的1的个数。<ul>
-<li>统计用户一共签到多少天</li>
-</ul>
-</li>
-<li><strong>bitpos:</strong> 用来查找指定范围内出现的第一个0或1。  <ul>
-<li>查找用户从哪一天开始第一次签到。 </li>
-</ul>
-</li>
-<li>如果指定范围参数[start,end],就可以统计在某个时间范围内用户签到了多少天，用户自某天以后哪天开始签到</li>
-<li>但start和end是字节索引,所以指定的位范围必须是<font color=#ff4911>8的倍数</font></li>
+<li>Demo  <figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; scan 0 match key999* count 3000</span><br><span class="line"></span><br><span class="line">1) "1746"</span><br><span class="line">2) 1) "key9996"</span><br><span class="line">     2) "key999"</span><br><span class="line">     3) "key9990"</span><br><span class="line">127.0.0.1:6379&gt; scan 1746 match key999* count 3000</span><br><span class="line"></span><br><span class="line">1) "9753"</span><br><span class="line">2) 1) "key9997"</span><br><span class="line">     2) "key9999"</span><br><span class="line">     3) "key9991"</span><br><span class="line">127.0.0.1:6379&gt; scan 9753 match key999* count 3000</span><br><span class="line"></span><br><span class="line">1) "5223"</span><br><span class="line">2) 1) "key9995"</span><br><span class="line">     2) "key9998"</span><br><span class="line">     3) "key9994"</span><br><span class="line">     4) "key9992"</span><br><span class="line">127.0.0.1:6379&gt; scan 5223 match key999* count 3000</span><br><span class="line"></span><br><span class="line">1) "0"</span><br><span class="line">2) 1) "key9993"</span><br></pre></td></tr></table></figure></li>
+<li>更多scan命令<ul>
+<li><code>zscan</code>遍历zset集合元素</li>
+<li><code>hscan</code>遍历hash字典元素</li>
+<li><code>sscan</code>遍历set集合元素</li>
 </ul>
 </li>
 </ul>
@@ -597,12 +588,12 @@
 
 
 <div class="article_copyright">
-    <p><span class="copy-title">文章标题:</span>Redis扩展类型-位图</p>
-    <p><span class="copy-title">文章字数:</span><span class="post-count">501</span></p>
+    <p><span class="copy-title">文章标题:</span>Redis算法-scan</p>
+    <p><span class="copy-title">文章字数:</span><span class="post-count">423</span></p>
     <p><span class="copy-title">本文作者:</span><a  title="Cynaith">Cynaith</a></p>
-    <p><span class="copy-title">发布时间:</span>2020-05-02, 02:20:35</p>
-    <p><span class="copy-title">最后更新:</span>2020-05-02, 02:22:57</p>
-    <span class="copy-title">原始链接:</span><a class="post-url" href="/2020/05/02/Redis%E6%89%A9%E5%B1%95%E7%B1%BB%E5%9E%8B-%E4%BD%8D%E5%9B%BE/" title="Redis扩展类型-位图">https://cynaith.github.io/2020/05/02/Redis%E6%89%A9%E5%B1%95%E7%B1%BB%E5%9E%8B-%E4%BD%8D%E5%9B%BE/</a>
+    <p><span class="copy-title">发布时间:</span>2020-05-02, 02:41:40</p>
+    <p><span class="copy-title">最后更新:</span>2020-05-02, 02:43:00</p>
+    <span class="copy-title">原始链接:</span><a class="post-url" href="/2020/05/02/Redis%E7%AE%97%E6%B3%95-scan/" title="Redis算法-scan">https://cynaith.github.io/2020/05/02/Redis%E7%AE%97%E6%B3%95-scan/</a>
     <p>
         <span class="copy-title">版权声明:</span><i class="fa fa-creative-commons"></i> <a rel="license noopener" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。
     </p>
