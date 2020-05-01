@@ -2,9 +2,9 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>设计模式-适配器模式 | Cynaith Blog</title>
-  <meta name="keywords" content=" 设计模式 , 适配器模式 ">
-  <meta name="description" content="设计模式-适配器模式 | Cynaith Blog">
+  <title>Redis基本类型-哈希类型 | Cynaith Blog</title>
+  <meta name="keywords" content=" Redis基本类型 ">
+  <meta name="description" content="Redis基本类型-哈希类型 | Cynaith Blog">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="description" content="位图  什么时候需要用到位图? 平时开发中有一些bool型数据需要存储,比如用户一年的签到记录。为了解决存储空间,Redis提供了位图数据结构,这样365天就是365位,46个字节。   位图是什么? 其实就是普通的字符串,也就是byte数组。   怎么使用位图? 可以使用普通的get&#x2F;set直接获取和设置整个位图的内容,也可以使用位图操作getbit&#x2F;setbit等将byte数组看成”位数组”来">
 <meta property="og:type" content="article">
@@ -380,9 +380,9 @@
 </aside>
 <div class="post">
     <div class="pjax">
-        <article id="post-设计模式-适配器模式" class="article article-type-post" itemscope itemprop="blogPost">
+        <article id="post-Redis基本类型-哈希类型" class="article article-type-post" itemscope itemprop="blogPost">
     
-        <h1 class="article-title">设计模式-适配器模式</h1>
+        <h1 class="article-title">Redis基本类型-哈希类型</h1>
     
     <div class="article-meta">
         
@@ -390,28 +390,26 @@
         
         <span class="book">
             
-                <a  data-rel="设计模式">设计模式</a>
+                <a  data-rel="Redis">Redis</a>
             
         </span>
         
         
         <span class="tag">
             
-            <a class="color5">设计模式</a>
-            
-            <a class="color1">适配器模式</a>
+            <a class="color5">Redis基本类型</a>
             
         </span>
         
     </div>
     <div class="article-meta">
         
-        创建时间:<time class="date" title='更新时间: 2020-05-02 01:26:05'>2020-05-02 01:23</time>
+        创建时间:<time class="date" title='更新时间: 2020-05-02 02:21:52'>2020-05-02 02:19</time>
         
     </div>
     <div class="article-meta">
         
-        <span>字数:710</span>
+        <span>字数:276</span>
         
         
         <span id="busuanzi_container_page_pv">
@@ -441,7 +439,7 @@
     
     <div class="toc-ref">
     
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#适配器模式"><span class="toc-text">适配器模式</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#类适配器"><span class="toc-text">类适配器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#对象适配器"><span class="toc-text">对象适配器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#接口适配器"><span class="toc-text">接口适配器</span></a></li></ol></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Java操作哈希类型"><span class="toc-text">Java操作哈希类型</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#用处"><span class="toc-text">用处</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#深入"><span class="toc-text">深入</span></a></li></ol></li></ol></li></ol>
     
 <style>
     .left-col .switch-btn,
@@ -457,24 +455,26 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="适配器模式"><a href="#适配器模式" class="headerlink" title="适配器模式"></a>适配器模式</h2><blockquote>
-<p>将某个类的接口转换成客户端期望的另一个接口表示。使得原本由于接口不兼容而不能一起工作的那些类能在一起工作。</p>
-</blockquote>
-<h3 id="类适配器"><a href="#类适配器" class="headerlink" title="类适配器"></a>类适配器</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@USER</span>: lynn</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@DATE</span>: 2020/4/26</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> 类适配器 </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        充电器 phone = <span class="keyword">new</span> 手机();</span><br><span class="line">        System.out.println(phone.高压转低压());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> 高压电</span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> 插座()&#123;</span><br><span class="line">        <span class="keyword">int</span> output = <span class="number">220</span>;</span><br><span class="line">        <span class="keyword">return</span> output;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">interface</span> 充电器</span>&#123;</span><br><span class="line">    <span class="keyword">int</span> 高压转低压();</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> 手机 <span class="keyword">extends</span> 高压电 <span class="keyword">implements</span> 充电器</span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> 高压转低压() &#123;</span><br><span class="line">        <span class="keyword">int</span> 高压电 = 插座();</span><br><span class="line">        <span class="comment">//适配细节</span></span><br><span class="line">        <span class="keyword">int</span> 低压电 = 高压电/<span class="number">44</span>;</span><br><span class="line">        <span class="keyword">return</span> 低压电;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>或者</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@USER</span>: lynn</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@DATE</span>: 2020/4/26</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> 类适配器 </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        充电器 phone = <span class="keyword">new</span> 手机();</span><br><span class="line">        System.out.println(phone.高压转低压());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> 高压电 <span class="keyword">implements</span> 充电器</span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> 插座()&#123;</span><br><span class="line">        <span class="keyword">int</span> output = <span class="number">220</span>;</span><br><span class="line">        <span class="keyword">return</span> output;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">interface</span> 充电器</span>&#123;</span><br><span class="line">    <span class="keyword">int</span> 高压转低压();</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> 手机 <span class="keyword">extends</span> 高压电</span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> 高压转低压() &#123;</span><br><span class="line">        <span class="keyword">int</span> 高压电 = 插座();</span><br><span class="line">        <span class="comment">//适配细节</span></span><br><span class="line">        <span class="keyword">int</span> 低压电 = 高压电/<span class="number">44</span>;</span><br><span class="line">        <span class="keyword">return</span> 低压电;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="对象适配器"><a href="#对象适配器" class="headerlink" title="对象适配器"></a>对象适配器</h3><blockquote>
-<p>对象适配器拥有源角色的实例</p>
-</blockquote>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@USER</span>: lynn</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@DATE</span>: 2020/4/26</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> 对象适配器 </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        充电器 phone = <span class="keyword">new</span> 手机对象(<span class="keyword">new</span> 高压电());</span><br><span class="line">        System.out.println(phone.高压转低压());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> 手机对象 <span class="keyword">extends</span> 高压电 <span class="keyword">implements</span> 充电器</span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> 高压电 伏<span class="number">220</span>高压电;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> 手机对象(高压电 伏<span class="number">220</span>高压电) &#123;</span><br><span class="line">        <span class="keyword">this</span>.伏<span class="number">220</span>高压电 = 伏<span class="number">220</span>高压电;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> 高压转低压() &#123;</span><br><span class="line">        <span class="keyword">int</span> 高压电 = 伏<span class="number">220</span>高压电.插座();</span><br><span class="line">        <span class="comment">//适配细节</span></span><br><span class="line">        <span class="keyword">int</span> 低压电 = 高压电/<span class="number">44</span>;</span><br><span class="line">        <span class="keyword">return</span> 低压电;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="接口适配器"><a href="#接口适配器" class="headerlink" title="接口适配器"></a>接口适配器</h3><blockquote>
-<p>通过抽象类来实现适配</p>
-</blockquote>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@USER</span>: lynn</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@DATE</span>: 2020/4/26</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> 接口适配器 </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        手机输入 phone = <span class="keyword">new</span> 手机适配器(<span class="keyword">new</span> 工业插座());</span><br><span class="line">        System.out.println(<span class="string">"输出后电压"</span>+phone.输入电压());</span><br><span class="line">        phone = <span class="keyword">new</span> 手机适配器(<span class="keyword">new</span> 家庭插座());</span><br><span class="line">        System.out.println(<span class="string">"输出后电压"</span>+phone.输入电压());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> 插座</span>&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> 输出电压()&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">200</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> 家庭插座 <span class="keyword">extends</span> 插座</span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> 输出电压() &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">220</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> 工业插座 <span class="keyword">extends</span> 插座</span>&#123;</span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> 输出电压() &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="number">440</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">interface</span> 手机输入</span>&#123;</span><br><span class="line">    <span class="keyword">int</span> 输入电压();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> 手机适配器 <span class="keyword">implements</span> 手机输入</span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> 插座 chazuo;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> 手机适配器(家庭插座 jiatingchazuo) &#123;</span><br><span class="line">        <span class="keyword">this</span>.chazuo = jiatingchazuo;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> 手机适配器(工业插座 gongyechazuo) &#123;</span><br><span class="line">        <span class="keyword">this</span>.chazuo = gongyechazuo;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> 输入电压() &#123;</span><br><span class="line">        <span class="keyword">if</span> (chazuo !=<span class="keyword">null</span>)&#123;</span><br><span class="line">            System.out.println(<span class="string">"输出前电压:"</span>+chazuo.输出电压());</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//适配逻辑</span></span><br><span class="line">        <span class="keyword">return</span> <span class="number">5</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>使用场景<ul>
-<li>项目接口的新需求，不用更改老代码，实现代码兼容</li>
+        <h2 id="Java操作哈希类型"><a href="#Java操作哈希类型" class="headerlink" title="Java操作哈希类型"></a>Java操作哈希类型</h2><ul>
+<li><strong>将fiele:value插入Hash表key中:</strong> <code>jedis.hset(&quot;bigcity&quot;,&quot;big&quot;,&quot;beijing&quot;);</code></li>
+<li><strong>获取Hash表key中域为feild的value:</strong> <code>jedis.hget(&quot;bigcity&quot;,&quot;big&quot;);</code></li>
+<li><strong>插入一个map至Hash表key中:</strong> <code>jedis.hmset(&quot;bigCity2&quot;,map);</code></li>
+<li><strong>通过List接收从Hash表key中返回的多个域:</strong> <code>List&lt;String&gt; list = jedis.hmget(&quot;bigCity2&quot;,&quot;big1&quot;,&quot;big2&quot;);</code></li>
+<li><strong>删除Hash表key中的多个feild:</strong> <code>jedis.hdel(&quot;bigCity2&quot;,&quot;big1&quot;,&quot;big2&quot;);</code></li>
+<li><strong>获取Hash表的长度:</strong> <code>jedis.hlen(&quot;bigcity&quot;);</code></li>
+<li><strong>是否存在Hash表key:</strong> <code>jedis.exists(&quot;bigCity2&quot;);</code></li>
+<li><strong>返回Hash表中所有feilds:</strong> <code>jedis.hkeys(&quot;bigCity2&quot;)</code></li>
+<li><strong>返回Hash表中所有values:</strong> <code>jedis.hvals(&quot;bigCity2&quot;)</code></li>
+</ul>
+<hr>
+<h4 id="用处"><a href="#用处" class="headerlink" title="用处"></a>用处</h4><ul>
+<li>操作某个字段</li>
+</ul>
+<hr>
+<h4 id="深入"><a href="#深入" class="headerlink" title="深入"></a>深入</h4><ul>
+<li>rehash<ul>
+<li>Redis为追求高性能,不堵塞服务,所以采用渐进式rehash策略。</li>
+<li><strong>渐进式rehash:</strong> <br>在rehash同时保留两个hash结构,查询时会查询两个hash结构。<br><br>在后续的定时任务以及hash操作指令中,循序渐进地将旧hash的内容一点点地迁移到新的hash结构中。<br><br>当hash移除了最后一个元素之后,该数据结构被自动删除,内存被回收。</li>
 </ul>
 </li>
 </ul>
@@ -491,12 +491,12 @@
 
 
 <div class="article_copyright">
-    <p><span class="copy-title">文章标题:</span>设计模式-适配器模式</p>
-    <p><span class="copy-title">文章字数:</span><span class="post-count">710</span></p>
+    <p><span class="copy-title">文章标题:</span>Redis基本类型-哈希类型</p>
+    <p><span class="copy-title">文章字数:</span><span class="post-count">276</span></p>
     <p><span class="copy-title">本文作者:</span><a  title="Cynaith">Cynaith</a></p>
-    <p><span class="copy-title">发布时间:</span>2020-05-02, 01:23:25</p>
-    <p><span class="copy-title">最后更新:</span>2020-05-02, 01:26:05</p>
-    <span class="copy-title">原始链接:</span><a class="post-url" href="/2020/05/02/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F/" title="设计模式-适配器模式">https://cynaith.github.io/2020/05/02/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F/</a>
+    <p><span class="copy-title">发布时间:</span>2020-05-02, 02:19:36</p>
+    <p><span class="copy-title">最后更新:</span>2020-05-02, 02:21:52</p>
+    <span class="copy-title">原始链接:</span><a class="post-url" href="/2020/05/02/Redis%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B-%E5%93%88%E5%B8%8C%E7%B1%BB%E5%9E%8B/" title="Redis基本类型-哈希类型">https://cynaith.github.io/2020/05/02/Redis%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B-%E5%93%88%E5%B8%8C%E7%B1%BB%E5%9E%8B/</a>
     <p>
         <span class="copy-title">版权声明:</span><i class="fa fa-creative-commons"></i> <a rel="license noopener" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。
     </p>

@@ -4,6 +4,156 @@
   
     
     <entry>
+      <title>Redis扩展类型-位图</title>
+      <link href="/2020/05/02/Redis%E6%89%A9%E5%B1%95%E7%B1%BB%E5%9E%8B-%E4%BD%8D%E5%9B%BE/"/>
+      <url>/2020/05/02/Redis%E6%89%A9%E5%B1%95%E7%B1%BB%E5%9E%8B-%E4%BD%8D%E5%9B%BE/</url>
+      
+        <content type="html"><![CDATA[<h3 id="位图"><a href="#位图" class="headerlink" title="位图"></a>位图</h3><hr><ul><li>什么时候需要用到位图?<ul><li>平时开发中有一些bool型数据需要存储,比如用户一年的签到记录。为了解决存储空间,Redis提供了位图数据结构,这样365天就是365位,46个字节。</li></ul></li><li>位图是什么?<ul><li>其实就是普通的字符串,也就是byte数组。</li></ul></li><li>怎么使用位图?<ul><li>可以使用普通的get/set直接获取和设置整个位图的内容,也可以使用位图操作getbit/setbit等将byte数组看成”位数组”来处理。</li></ul></li></ul><hr><h5 id="基本用法"><a href="#基本用法" class="headerlink" title="基本用法"></a>基本用法</h5><ul><li><p>Redis的位数组是自动扩展的,如果设置了某个偏移位置超出了现有的内容范围,就会自动将位数组进行零扩充。</p></li><li><p>零存整取</p><ul><li>h的ASCII码:0b1101000<br>e的ASCII码:0b1100101  <figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; setbit s 1 1</span><br><span class="line">(integer) 0</span><br><span class="line">127.0.0.1:6379&gt; setbit s 2 1</span><br><span class="line">(integer) 0</span><br><span class="line">127.0.0.1:6379&gt; setbit s 4 1</span><br><span class="line">(integer) 0</span><br><span class="line">127.0.0.1:6379&gt; setbit s 9 1</span><br><span class="line">(integer) 0</span><br><span class="line">127.0.0.1:6379&gt; setbit s 10 1</span><br><span class="line">(integer) 0</span><br><span class="line">127.0.0.1:6379&gt; setbit s 13 1</span><br><span class="line">(integer) 0</span><br><span class="line">127.0.0.1:6379&gt; setbit s 15 1</span><br><span class="line">(integer) 0</span><br><span class="line">127.0.0.1:6379&gt; get s</span><br><span class="line">"he"</span><br></pre></td></tr></table></figure></li></ul></li><li><p>整存零取</p><ul><li>h的ASCII码:0b1101000  <figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; set w h</span><br><span class="line">(integer) 0</span><br><span class="line">127.0.0.1:6379&gt; getbit w 1</span><br><span class="line">(integer) 1</span><br><span class="line">127.0.0.1:6379&gt; getbit w 2</span><br><span class="line">(integer) 1</span><br></pre></td></tr></table></figure></li></ul></li><li><p>如果对应位的字节是不可打印字符,redis-cli会显示该字符的十六进制形式</p></li><li><p>Redis提供了位图统计指令bitcount和位图查找指令bitpos</p><ul><li><strong>bitcount:</strong> 用来统计指定位置范围内的1的个数。<ul><li>统计用户一共签到多少天</li></ul></li><li><strong>bitpos:</strong> 用来查找指定范围内出现的第一个0或1。  <ul><li>查找用户从哪一天开始第一次签到。 </li></ul></li><li>如果指定范围参数[start,end],就可以统计在某个时间范围内用户签到了多少天，用户自某天以后哪天开始签到</li><li>但start和end是字节索引,所以指定的位范围必须是<font color=#ff4911>8的倍数</font></li></ul></li></ul>]]></content>
+      
+      
+      <categories>
+          
+          <category> Redis </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Redis基本类型 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Redis基本类型-有序集合</title>
+      <link href="/2020/05/02/Redis%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B-%E6%9C%89%E5%BA%8F%E9%9B%86%E5%90%88/"/>
+      <url>/2020/05/02/Redis%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B-%E6%9C%89%E5%BA%8F%E9%9B%86%E5%90%88/</url>
+      
+        <content type="html"><![CDATA[<h2 id="Java操作有序集合SortedSet"><a href="#Java操作有序集合SortedSet" class="headerlink" title="Java操作有序集合SortedSet"></a>Java操作有序集合SortedSet</h2><ul><li><strong>插入score和member到有序集合key中:</strong> <code>jedis.zadd(&quot;class1&quot;, 123, &quot;xiaoming&quot;);</code></li><li><strong>返回有序集合key的基数:</strong> <code>jedis.zcard(&quot;class1&quot;);</code></li><li><strong>返回有序集合中score值在min和max之间的成员的数量:</strong> <code>jedis.zcount(&quot;class1&quot;, 124, 125);</code></li><li><strong>返回有序集合中score值在min和max之间的成员的member:</strong> <code>jedis.zrevrangeByScore(&quot;class1&quot;, 130, 120);</code></li><li><strong>返回指定区间内的成员(score小-&gt;大):</strong> <code>//区间为负为倒序&lt;br&gt;jedis.zrange(&quot;class1&quot;, 0, -1);</code></li><li><strong>返回指定区间内的成员(score大-&gt;小):</strong> <code>jedis.zrevrange(&quot;class1&quot;, 0, -1);</code></li><li><strong>使member的score增加increment:</strong> <code>jedis.zincrby(&quot;class1&quot;, 12, &quot;xiaoming&quot;);</code></li><li><strong>查看member的score:</strong> <code>jedis.zscore(&quot;class1&quot;, &quot;xiaoming&quot;);</code></li><li><strong>查看有序集合中member的排名(小-&gt;大):</strong> <code>jedis.zrank(&quot;class1&quot;, &quot;sad&quot;);</code></li><li><strong>移除有序集合中的一个或多个成员,不存在将忽略:</strong> <code>jedis.zrem(&quot;class1&quot;,&quot;xiaoming&quot;,&quot;sad&quot;,&quot;xiaowang&quot;)；</code></li></ul><hr><h4 id="用处"><a href="#用处" class="headerlink" title="用处"></a>用处</h4><ul><li>排行榜应用，取TOP N操作</li><li>延时任务</li><li>范围查找</li></ul><hr><h4 id="深入"><a href="#深入" class="headerlink" title="深入"></a>深入</h4><ul><li>“跳跃列表”<ul><li>如图<br><br><img src="./img/skiplist.jpg" alt="skiplist.jpg">  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">跳跃表在redis中主要是有序表的一种底层实现。对于普通链表的查找，即使有序，我们也不能使用二分法，需要从头开始，一个一个找，时间复杂度为O(n)。</span><br><span class="line">而对于跳跃表，从名字可以看出跳跃表的优势就在于可以跳跃。如何做到呢？</span><br><span class="line">在于其特殊的层设计。比如我们查找46，普通链表只能从头开始查找，比对-3,2,17...直到46，要比对7次。</span><br><span class="line">但是对于跳跃表，我们可以从最高层开始查找：</span><br><span class="line">    </span><br><span class="line">第一步：在L4层直接与55比对，发现大了，退回到第3层</span><br><span class="line">    </span><br><span class="line">第二步：在L3层与21比对，发现小了，继续往前比对55，发现大了，退回到第二层</span><br><span class="line"></span><br><span class="line">第三步：在L2层与37比对，发现小了，往前，与55比对，发现大了，退回到第一层</span><br><span class="line"></span><br><span class="line">第四步：在第1层，与46比对，查找成功。</span><br><span class="line">————————————————</span><br><span class="line">版权声明：本文为CSDN博主「OliverAAAAAA」的原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接及本声明。</span><br><span class="line">原文链接：https:&#x2F;&#x2F;blog.csdn.net&#x2F;OliverAAAAAA&#x2F;article&#x2F;details&#x2F;89184018</span><br></pre></td></tr></table></figure></li></ul></li></ul>]]></content>
+      
+      
+      <categories>
+          
+          <category> Redis </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Redis基本类型 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Redis基本类型-哈希类型</title>
+      <link href="/2020/05/02/Redis%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B-%E5%93%88%E5%B8%8C%E7%B1%BB%E5%9E%8B/"/>
+      <url>/2020/05/02/Redis%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B-%E5%93%88%E5%B8%8C%E7%B1%BB%E5%9E%8B/</url>
+      
+        <content type="html"><![CDATA[<h2 id="Java操作哈希类型"><a href="#Java操作哈希类型" class="headerlink" title="Java操作哈希类型"></a>Java操作哈希类型</h2><ul><li><strong>将fiele:value插入Hash表key中:</strong> <code>jedis.hset(&quot;bigcity&quot;,&quot;big&quot;,&quot;beijing&quot;);</code></li><li><strong>获取Hash表key中域为feild的value:</strong> <code>jedis.hget(&quot;bigcity&quot;,&quot;big&quot;);</code></li><li><strong>插入一个map至Hash表key中:</strong> <code>jedis.hmset(&quot;bigCity2&quot;,map);</code></li><li><strong>通过List接收从Hash表key中返回的多个域:</strong> <code>List&lt;String&gt; list = jedis.hmget(&quot;bigCity2&quot;,&quot;big1&quot;,&quot;big2&quot;);</code></li><li><strong>删除Hash表key中的多个feild:</strong> <code>jedis.hdel(&quot;bigCity2&quot;,&quot;big1&quot;,&quot;big2&quot;);</code></li><li><strong>获取Hash表的长度:</strong> <code>jedis.hlen(&quot;bigcity&quot;);</code></li><li><strong>是否存在Hash表key:</strong> <code>jedis.exists(&quot;bigCity2&quot;);</code></li><li><strong>返回Hash表中所有feilds:</strong> <code>jedis.hkeys(&quot;bigCity2&quot;)</code></li><li><strong>返回Hash表中所有values:</strong> <code>jedis.hvals(&quot;bigCity2&quot;)</code></li></ul><hr><h4 id="用处"><a href="#用处" class="headerlink" title="用处"></a>用处</h4><ul><li>操作某个字段</li></ul><hr><h4 id="深入"><a href="#深入" class="headerlink" title="深入"></a>深入</h4><ul><li>rehash<ul><li>Redis为追求高性能,不堵塞服务,所以采用渐进式rehash策略。</li><li><strong>渐进式rehash:</strong> <br>在rehash同时保留两个hash结构,查询时会查询两个hash结构。<br><br>在后续的定时任务以及hash操作指令中,循序渐进地将旧hash的内容一点点地迁移到新的hash结构中。<br><br>当hash移除了最后一个元素之后,该数据结构被自动删除,内存被回收。</li></ul></li></ul>]]></content>
+      
+      
+      <categories>
+          
+          <category> Redis </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Redis基本类型 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Redis基本类型-集合类型</title>
+      <link href="/2020/05/02/Redis%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B-%E9%9B%86%E5%90%88%E7%B1%BB%E5%9E%8B/"/>
+      <url>/2020/05/02/Redis%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B-%E9%9B%86%E5%90%88%E7%B1%BB%E5%9E%8B/</url>
+      
+        <content type="html"><![CDATA[<h2 id="java操作Redis集合类型"><a href="#java操作Redis集合类型" class="headerlink" title="java操作Redis集合类型"></a>java操作Redis集合类型</h2><ul><li><strong>添加集合元素:</strong> <code>jedis.sadd(&quot;city&quot;,&quot;北京&quot;,&quot;广州&quot;,&quot;深圳&quot;,&quot;上海&quot;);</code></li><li><strong>取集合头部元素:</strong> <code>jedis.spop(&quot;city&quot;);</code></li><li><strong>随机取一个值:</strong> <code>jedis.srandmember(&quot;city&quot;);</code></li><li><strong>Srem移除集合中一或多个元素,不存在的元素会被忽略.当key不是集合类型时,返回一个错误:</strong> <code>jedis.screm(&quot;city&quot;,&quot;北京&quot;)</code></li><li><strong>Smember用于返回集合中的所有成员.不存在的集合key视为空集合:</strong> <code>jedis.smember(&quot;city&quot;);</code></li><li><strong>判断元素是否在集合中:</strong> <code>jedis.sismember(&quot;city&quot;,&quot;深圳&quot;;</code></li><li><strong>Scard用于返回集合中元素的数量:</strong> <code>jedis.scard(&quot;city&quot;);</code></li><li><strong>求交集:</strong> <code>jedis.sinter(&quot;city1&quot;,&quot;city2&quot;);</code></li><li><strong>求并集:</strong> <code>jedis.sunion(&quot;city1&quot;,&quot;city2&quot;);</code></li><li><strong>求差集:</strong> <code>jedis.sdiff(&quot;city1&quot;,&quot;city2&quot;);</code></li></ul><hr><h4 id="用处"><a href="#用处" class="headerlink" title="用处"></a>用处</h4><ul><li>全局去重</li><li>利用交集、并集、差集等操作,计算共同喜好，全部的喜好，自己独有的喜好等功能.</li></ul>]]></content>
+      
+      
+      <categories>
+          
+          <category> Redis </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Redis基本类型 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Redis基本类型-列表类型</title>
+      <link href="/2020/05/02/Redis%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B-%E5%88%97%E8%A1%A8%E7%B1%BB%E5%9E%8B/"/>
+      <url>/2020/05/02/Redis%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B-%E5%88%97%E8%A1%A8%E7%B1%BB%E5%9E%8B/</url>
+      
+        <content type="html"><![CDATA[<h2 id="Java-操作列表类型-类似于LinkedList"><a href="#Java-操作列表类型-类似于LinkedList" class="headerlink" title="Java 操作列表类型(类似于LinkedList)"></a>Java 操作列表类型(类似于LinkedList)</h2><ul><li><strong>在列表头部添加数据:</strong> <code>jedis.lpush(&quot;list&quot;, &quot;xiaoming&quot;,&quot;age&quot;,&quot;20&quot;,&quot;address&quot;,&quot;beijing&quot;);</code></li><li><strong>在列表尾部添加数据:</strong> <code>jedis.rpush(&quot;height&quot;,&quot;170cm&quot;,&quot;hobby&quot;,&quot;dance&quot;);</code></li><li><strong>列表长度:</strong> <code>jedis.llen(&quot;list&quot;)</code></li><li><strong>列表list下标为2的元素:</strong> <code>jedis.lindex(&quot;list&quot;,2);</code></li><li><strong>移除一个元素:</strong> <code>jedis.lrem(&quot;list&quot;,1,&quot;age&quot;)</code></li><li><strong>将列表key下标为index的元素值设置为value:</strong> <code>jedis.lset(&quot;list&quot;,5,&quot;hello world&quot;);</code></li><li><strong>移除并返回list尾元素:</strong> <code>jedis.rpop(&quot;list&quot;);</code></li><li>取值<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">List&lt;String&gt; list = jedis.lrange(<span class="string">"list"</span>,<span class="number">0</span>,-<span class="number">1</span>);</span><br><span class="line"><span class="keyword">for</span>(String str:list)&#123;</span><br><span class="line">    System.out.println(str);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li></ul><hr><h4 id="用处"><a href="#用处" class="headerlink" title="用处"></a>用处</h4><ul><li>简单的消息队列</li><li>利用lrange命令，做基于redis的分页功能</li></ul><hr><h4 id="深入"><a href="#深入" class="headerlink" title="深入"></a>深入</h4><ul><li>Redis底层存储是”快速链表(quickList)”结构<ul><li>在<font color=#FF2941>列表元素较少</font>的情况下,会使用一块连续的内存存储,这个结构是ziplist(压缩列表)。</li><li><font color=#FF2941>数据量多</font>时改为quicklist。</li><li>Redis将链表和ziplist结合起来组成了quicklist,将多个ziplist使用双向指针串起来使用</li><li>使用List作为异步消息队列<ul><li><strong>问题1:</strong> 队列空了怎么办?<br><br>&emsp;&emsp;&emsp;&nbsp;<br>当队列为空时,客户端就会陷入空轮询的pop-&gt;无数据-&gt;pop的死循环中。<br>所以采用堵塞读方法  <code>blpop</code>和<code>brpop</code><br>堵塞读在队列没有数据时,会立即进入休眠状态,一旦数据到来,则立刻醒过来。消息延迟几乎为0</li><li><strong>问题2:</strong> 空闲链接自动断开<br><br>&emsp;&emsp;&emsp;&nbsp;<br>如果线程一直堵塞在那里,Redis的客户端就成了闲置连接,闲置过久,服务器一般会主动断开,减少闲置资源占用。<br>这时blpop/brpop会抛出异常。</li></ul></li></ul></li></ul>]]></content>
+      
+      
+      <categories>
+          
+          <category> Redis </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Redis基本类型 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Redis基本类型-字符类型</title>
+      <link href="/2020/05/02/Redis%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B-%E5%AD%97%E7%AC%A6%E7%B1%BB%E5%9E%8B/"/>
+      <url>/2020/05/02/Redis%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B-%E5%AD%97%E7%AC%A6%E7%B1%BB%E5%9E%8B/</url>
+      
+        <content type="html"><![CDATA[<h2 id="Java-操作字符类型"><a href="#Java-操作字符类型" class="headerlink" title="Java 操作字符类型"></a>Java 操作字符类型</h2><ul><li><strong>查看键为mykey的值是否存在:</strong> <code>jedis.exists(&quot;mykey&quot;);</code></li><li><strong>键mykey的值为:</strong> <code>jedis.get(&quot;mykey&quot;);</code></li><li><strong>查看键为mykey的类型:</strong> <code>jedis.type(&quot;mykey&quot;);</code></li><li><strong>随机获得一个key:</strong> <code>jedis.randomKey(&quot;mykey&quot;);</code></li><li><strong>将mykey重命名为mykey1:</strong> <code>jedis.rename(&quot;mykey&quot;,&quot;mykey1&quot;);</code></li><li><strong>删除key “mykey”:</strong> <code>jedis.del(&quot;mykey&quot;);</code></li></ul><hr><ul><li><strong>设置name:</strong> <code>jedis.set(&quot;name&quot;,&quot;asd&quot;);</code></li><li><strong>设置name,如果存在返回0:</strong> <code>jedis.setnx(&quot;name&quot;,&quot;asd&quot;);</code></li><li><strong>获取key为name的值:</strong> <code>jedis.get(&quot;name&quot;)</code> </li><li><strong>获取key为name和name1的value值:</strong> <code>jedis.mget(&quot;name&quot;,&quot;name1&quot;);</code></li><li><strong>自增1:</strong> <code>jedis.incr(&quot;index&quot;)</code> </li><li><strong>自增2:</strong> <code>jedis.inceBy(&quot;index&quot;)</code> </li><li><strong>递减1:</strong> <code>jedis.decr(&quot;index&quot;)</code></li><li><strong>递减2:</strong> <code>jedis.decrBy(&quot;index&quot;)</code></li><li><strong>在name后添加String:</strong> <code>jedis.append(&quot;name&quot;,&quot;asd&quot;)</code></li></ul><hr><h4 id="用处"><a href="#用处" class="headerlink" title="用处"></a>用处</h4><ul><li>复杂的计数功能的缓存</li></ul>]]></content>
+      
+      
+      <categories>
+          
+          <category> Redis </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Redis基本类型 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>设计模式-适配器模式</title>
       <link href="/2020/05/02/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F/"/>
       <url>/2020/05/02/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E9%80%82%E9%85%8D%E5%99%A8%E6%A8%A1%E5%BC%8F/</url>
