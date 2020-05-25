@@ -2,9 +2,9 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Redis基本类型-字符类型 | Cynaith Blog</title>
-  <meta name="keywords" content=" Redis基本类型 ">
-  <meta name="description" content="Redis基本类型-字符类型 | Cynaith Blog">
+  <title>图解HTTP-7-确保Web安全的HTTPS | Cynaith Blog</title>
+  <meta name="keywords" content=" 计算机网络 ">
+  <meta name="description" content="图解HTTP-7-确保Web安全的HTTPS | Cynaith Blog">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="description" content="HTTP缺点 通信使用明文(不加密)，内容可能会被窃听  如何加密处理防止被窃听？  将通信加密HTTP 协议中没有加密机制，但可以通过和 SSL(Secure Socket Layer，安全套接层)或TLS(Transport Layer Security，安全层传输协议)的组合使用，加密 HTTP 的通信内容。 用 SSL 建立安全通信线路之后，就可以在这条线路上进行 HTTP 通信了。与 S">
 <meta property="og:type" content="article">
@@ -532,9 +532,9 @@
 </aside>
 <div class="post">
     <div class="pjax">
-        <article id="post-Redis基本类型-字符类型" class="article article-type-post" itemscope itemprop="blogPost">
+        <article id="post-图解HTTP-确保Web安全的HTTPS" class="article article-type-post" itemscope itemprop="blogPost">
     
-        <h1 class="article-title">Redis基本类型-字符类型</h1>
+        <h1 class="article-title">图解HTTP-7-确保Web安全的HTTPS</h1>
     
     <div class="article-meta">
         
@@ -542,26 +542,26 @@
         
         <span class="book">
             
-                <a  data-rel="Redis">Redis</a>
+                <a  data-rel="图解HTTP">图解HTTP</a>
             
         </span>
         
         
         <span class="tag">
             
-            <a class="color5">Redis基本类型</a>
+            <a class="color1">计算机网络</a>
             
         </span>
         
     </div>
     <div class="article-meta">
         
-        创建时间:<time class="date" title='更新时间: 2020-05-02 02:18:31'>2020-05-02 02:18</time>
+        创建时间:<time class="date" title='更新时间: 2020-05-26 01:02:27'>2020-05-26 01:00</time>
         
     </div>
     <div class="article-meta">
         
-        <span>字数:193</span>
+        <span>字数:1k</span>
         
         
         <span id="busuanzi_container_page_pv">
@@ -591,7 +591,7 @@
     
     <div class="toc-ref">
     
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Java-操作字符类型"><span class="toc-text">Java 操作字符类型</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#用处"><span class="toc-text">用处</span></a></li></ol></li></ol></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#HTTP缺点"><span class="toc-text">HTTP缺点</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HTTP-加密-认证-完整性保护-HTTPS"><span class="toc-text">HTTP+加密+认证+完整性保护&#x3D;HTTPS</span></a></li></ol>
     
 <style>
     .left-col .switch-btn,
@@ -607,30 +607,68 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="Java-操作字符类型"><a href="#Java-操作字符类型" class="headerlink" title="Java 操作字符类型"></a>Java 操作字符类型</h2><ul>
-<li><strong>查看键为mykey的值是否存在:</strong> <code>jedis.exists(&quot;mykey&quot;);</code></li>
-<li><strong>键mykey的值为:</strong> <code>jedis.get(&quot;mykey&quot;);</code></li>
-<li><strong>查看键为mykey的类型:</strong> <code>jedis.type(&quot;mykey&quot;);</code></li>
-<li><strong>随机获得一个key:</strong> <code>jedis.randomKey(&quot;mykey&quot;);</code></li>
-<li><strong>将mykey重命名为mykey1:</strong> <code>jedis.rename(&quot;mykey&quot;,&quot;mykey1&quot;);</code></li>
-<li><strong>删除key “mykey”:</strong> <code>jedis.del(&quot;mykey&quot;);</code></li>
-</ul>
-<hr>
+        <h2 id="HTTP缺点"><a href="#HTTP缺点" class="headerlink" title="HTTP缺点"></a>HTTP缺点</h2><ul>
+<li><p>通信使用明文(不加密)，内容可能会被窃听</p>
 <ul>
-<li><strong>设置name:</strong> <code>jedis.set(&quot;name&quot;,&quot;asd&quot;);</code></li>
-<li><strong>设置name,如果存在返回0:</strong> <code>jedis.setnx(&quot;name&quot;,&quot;asd&quot;);</code></li>
-<li><strong>获取key为name的值:</strong> <code>jedis.get(&quot;name&quot;)</code> </li>
-<li><strong>获取key为name和name1的value值:</strong> <code>jedis.mget(&quot;name&quot;,&quot;name1&quot;);</code></li>
-<li><strong>自增1:</strong> <code>jedis.incr(&quot;index&quot;)</code> </li>
-<li><strong>自增2:</strong> <code>jedis.inceBy(&quot;index&quot;)</code> </li>
-<li><strong>递减1:</strong> <code>jedis.decr(&quot;index&quot;)</code></li>
-<li><strong>递减2:</strong> <code>jedis.decrBy(&quot;index&quot;)</code></li>
-<li><strong>在name后添加String:</strong> <code>jedis.append(&quot;name&quot;,&quot;asd&quot;)</code></li>
+<li><p>如何加密处理防止被窃听？</p>
+<ul>
+<li><p>将通信加密<br>HTTP 协议中没有加密机制，但可以通过和 SSL(Secure Socket Layer，安全套接层)或<br>TLS(Transport Layer Security，安全层传输协议)的组合使用，加密 HTTP 的通信内容。</p>
+<p>用 SSL 建立安全通信线路之后，就可以在这条线路上进行 HTTP 通信了。<br>与 SSL 组合使用的 HTTP 被称为 HTTPS(HTTP Secure，超文本传输安全协议)或 HTTP over SSL。</p>
+</li>
+<li><p>将内容加密<br>客户端需要对HTTP报文进行加密处理在发送请求，但是内容仍有被篡改的风险。</p>
+</li>
 </ul>
-<hr>
-<h4 id="用处"><a href="#用处" class="headerlink" title="用处"></a>用处</h4><ul>
-<li>复杂的计数功能的缓存</li>
+</li>
 </ul>
+</li>
+<li><p>不验证通信方的身份，因此有可能遭遇伪装</p>
+<ul>
+<li>任何人都可发起请求，会存在以下隐患<ul>
+<li>无法确定请求发送至目标的 Web 服务器是否是按真实意图返回响应的那台服务器。有可能是已伪装的 Web 服务器。</li>
+<li>无法确定响应返回到的客户端是否是按真实意图接收响 应的那个客户端。有可能是已伪装的客户端。</li>
+<li>无法确定正在通信的对方是否具备访问权限。因为某些 Web 服务器上保存着重要的信息，只想发给特定用户通信的权限。</li>
+<li>无法判定请求是来自何方、出自谁手。</li>
+<li>即使是无意义的请求也会照单全收。无法阻止海量请求下的 DoS 攻击(Denial of Service，拒绝服务攻击)。</li>
+</ul>
+</li>
+<li>查明对手的证书<ul>
+<li>使用SSL可以确定通信方</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>无法证明报文的完整性，所以有可能已遭篡改</p>
+<ul>
+<li>接收到的内容可能有误<br>请求或响应在传输途中，遭攻击者拦截并篡改内容的攻击称为中间人攻击(MITM)</li>
+<li>如何防止篡改<br>常用的是 MD5 和 SHA-1等散列值校验的方法，用来确认文件的数字签名方法。(可惜的是，用这些方法也依然无法百分百保证确认结果正确。因为 PGP 和 MD5 本身被改写的话，用户是没有办法意识到的。)</li>
+</ul>
+<p>为了有效防止这些弊端，有必要使用 HTTPS。SSL 提供认证和加 密处理及摘要功能。仅靠 HTTP 确保完整性是非常困难的，因此 通过和其他协议组合使用来实现这个目标。</p>
+</li>
+</ul>
+<h2 id="HTTP-加密-认证-完整性保护-HTTPS"><a href="#HTTP-加密-认证-完整性保护-HTTPS" class="headerlink" title="HTTP+加密+认证+完整性保护=HTTPS"></a>HTTP+加密+认证+完整性保护=HTTPS</h2><p>HTTPS并非是应用层的一种新协议，只是HTTP通信接口部分用SSL和TLS协议代替。</p>
+<p>通常，HTTP直接和TCP通信，当使用SSL时，则变为先和SSL通信，再由SSL和TCP通信。</p>
+<ul>
+<li><p>相互交换密钥的公开密钥加密技术<br>SSL 采用一种叫做公开密钥加密(Public-key cryptography)的加密处理方式。</p>
+<ul>
+<li><p>共享密钥加密的困境<br>加密和解密用同一个密钥的方式称为共享密钥加密，也叫做对称密钥加密。但发送密钥也有被窃听的风险。</p>
+</li>
+<li><p>使用两把密钥的公开密钥加密<br>发送密文一方使用公开密钥进行加密处理，对方收到信息后，在用自己的私有密钥进行解密。(解密过程就是对离散对数进行求值)</p>
+</li>
+<li><p>HTTPS采用混合加密机制<br>在交换密钥环节使用公开密钥加密方式，之后的建立通信交换报文阶段则使用共享密钥加密方式。</p>
+<ol>
+<li>使用公开密钥加密方式安全地交换在稍后的共享密钥加密中要使用的密钥</li>
+<li>确保交换的密钥是安全的前提下，使用共享密钥加密方式进行通信</li>
+</ol>
+</li>
+</ul>
+</li>
+<li><p>证明公开密钥正确性的证书  </p>
+<blockquote>
+<p>防止公开密钥在传输途中，被攻击者替换。</p>
+</blockquote>
+</li>
+</ul>
+<p>为了解决上述问题，可以使用由数字证书认证机构和其相关机关颁发的公开密钥证书。</p>
 
       
        <hr><span style="font-style: italic;color: gray;"> 转载请注明来源，欢迎对文章中的引用来源进行考证，欢迎指出任何有错误或不够清晰的表达。可以在下面评论区评论，也可以邮件至 yanglau0527@gmail.com </span>
@@ -644,12 +682,12 @@
 
 
 <div class="article_copyright">
-    <p><span class="copy-title">文章标题:</span>Redis基本类型-字符类型</p>
-    <p><span class="copy-title">文章字数:</span><span class="post-count">193</span></p>
+    <p><span class="copy-title">文章标题:</span>图解HTTP-7-确保Web安全的HTTPS</p>
+    <p><span class="copy-title">文章字数:</span><span class="post-count">1k</span></p>
     <p><span class="copy-title">本文作者:</span><a  title="Cynaith">Cynaith</a></p>
-    <p><span class="copy-title">发布时间:</span>2020-05-02, 02:18:02</p>
-    <p><span class="copy-title">最后更新:</span>2020-05-02, 02:18:31</p>
-    <span class="copy-title">原始链接:</span><a class="post-url" href="/2020/05/02/Redis%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B-%E5%AD%97%E7%AC%A6%E7%B1%BB%E5%9E%8B/" title="Redis基本类型-字符类型">https://cynaith.github.io/2020/05/02/Redis%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B-%E5%AD%97%E7%AC%A6%E7%B1%BB%E5%9E%8B/</a>
+    <p><span class="copy-title">发布时间:</span>2020-05-26, 01:00:12</p>
+    <p><span class="copy-title">最后更新:</span>2020-05-26, 01:02:27</p>
+    <span class="copy-title">原始链接:</span><a class="post-url" href="/2020/05/26/%E5%9B%BE%E8%A7%A3HTTP-%E7%A1%AE%E4%BF%9DWeb%E5%AE%89%E5%85%A8%E7%9A%84HTTPS/" title="图解HTTP-7-确保Web安全的HTTPS">https://cynaith.github.io/2020/05/26/%E5%9B%BE%E8%A7%A3HTTP-%E7%A1%AE%E4%BF%9DWeb%E5%AE%89%E5%85%A8%E7%9A%84HTTPS/</a>
     <p>
         <span class="copy-title">版权声明:</span><i class="fa fa-creative-commons"></i> <a rel="license noopener" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。
     </p>

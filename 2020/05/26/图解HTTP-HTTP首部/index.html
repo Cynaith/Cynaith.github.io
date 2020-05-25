@@ -2,9 +2,9 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Redis基本类型-字符类型 | Cynaith Blog</title>
-  <meta name="keywords" content=" Redis基本类型 ">
-  <meta name="description" content="Redis基本类型-字符类型 | Cynaith Blog">
+  <title>图解HTTP-6-HTTP首部 | Cynaith Blog</title>
+  <meta name="keywords" content=" 计算机网络 ">
+  <meta name="description" content="图解HTTP-6-HTTP首部 | Cynaith Blog">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="description" content="HTTP缺点 通信使用明文(不加密)，内容可能会被窃听  如何加密处理防止被窃听？  将通信加密HTTP 协议中没有加密机制，但可以通过和 SSL(Secure Socket Layer，安全套接层)或TLS(Transport Layer Security，安全层传输协议)的组合使用，加密 HTTP 的通信内容。 用 SSL 建立安全通信线路之后，就可以在这条线路上进行 HTTP 通信了。与 S">
 <meta property="og:type" content="article">
@@ -532,9 +532,9 @@
 </aside>
 <div class="post">
     <div class="pjax">
-        <article id="post-Redis基本类型-字符类型" class="article article-type-post" itemscope itemprop="blogPost">
+        <article id="post-图解HTTP-HTTP首部" class="article article-type-post" itemscope itemprop="blogPost">
     
-        <h1 class="article-title">Redis基本类型-字符类型</h1>
+        <h1 class="article-title">图解HTTP-6-HTTP首部</h1>
     
     <div class="article-meta">
         
@@ -542,26 +542,26 @@
         
         <span class="book">
             
-                <a  data-rel="Redis">Redis</a>
+                <a  data-rel="图解HTTP">图解HTTP</a>
             
         </span>
         
         
         <span class="tag">
             
-            <a class="color5">Redis基本类型</a>
+            <a class="color1">计算机网络</a>
             
         </span>
         
     </div>
     <div class="article-meta">
         
-        创建时间:<time class="date" title='更新时间: 2020-05-02 02:18:31'>2020-05-02 02:18</time>
+        创建时间:<time class="date" title='更新时间: 2020-05-26 01:02:29'>2020-05-26 00:59</time>
         
     </div>
     <div class="article-meta">
         
-        <span>字数:193</span>
+        <span>字数:1.5k</span>
         
         
         <span id="busuanzi_container_page_pv">
@@ -591,7 +591,7 @@
     
     <div class="toc-ref">
     
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Java-操作字符类型"><span class="toc-text">Java 操作字符类型</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#用处"><span class="toc-text">用处</span></a></li></ol></li></ol></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#HTTP报文首部"><span class="toc-text">HTTP报文首部</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#HTTP请求报文"><span class="toc-text">HTTP请求报文</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#HTTP响应报文"><span class="toc-text">HTTP响应报文</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HTTP首部字段"><span class="toc-text">HTTP首部字段</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HTTP-1-1通用首部字段"><span class="toc-text">HTTP&#x2F;1.1通用首部字段</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#请求首部字段"><span class="toc-text">请求首部字段</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#响应首部字段"><span class="toc-text">响应首部字段</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#实体首部字段"><span class="toc-text">实体首部字段</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#为Cookie服务的首部字段"><span class="toc-text">为Cookie服务的首部字段</span></a></li></ol>
     
 <style>
     .left-col .switch-btn,
@@ -607,29 +607,129 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="Java-操作字符类型"><a href="#Java-操作字符类型" class="headerlink" title="Java 操作字符类型"></a>Java 操作字符类型</h2><ul>
-<li><strong>查看键为mykey的值是否存在:</strong> <code>jedis.exists(&quot;mykey&quot;);</code></li>
-<li><strong>键mykey的值为:</strong> <code>jedis.get(&quot;mykey&quot;);</code></li>
-<li><strong>查看键为mykey的类型:</strong> <code>jedis.type(&quot;mykey&quot;);</code></li>
-<li><strong>随机获得一个key:</strong> <code>jedis.randomKey(&quot;mykey&quot;);</code></li>
-<li><strong>将mykey重命名为mykey1:</strong> <code>jedis.rename(&quot;mykey&quot;,&quot;mykey1&quot;);</code></li>
-<li><strong>删除key “mykey”:</strong> <code>jedis.del(&quot;mykey&quot;);</code></li>
-</ul>
-<hr>
+        <h2 id="HTTP报文首部"><a href="#HTTP报文首部" class="headerlink" title="HTTP报文首部"></a>HTTP报文首部</h2><p>HTTP协议的请求和响应报文中必定包含HTTP首部。首部内容为客户端和服务器分别处理请求和响应提供所需要的信息。</p>
+<p>报文首部由几个字段构成</p>
+<h4 id="HTTP请求报文"><a href="#HTTP请求报文" class="headerlink" title="HTTP请求报文"></a>HTTP请求报文</h4><p>在请求中，HTTP报文由方法、URI、HTTP版本(前三个为请求行)、HTTP首部字段等部分构成。</p>
+<h4 id="HTTP响应报文"><a href="#HTTP响应报文" class="headerlink" title="HTTP响应报文"></a>HTTP响应报文</h4><p>在响应中，HTTP报文由HTTP版本、状态码(数字和原因短语)、HTTP首部字段构成</p>
+<h2 id="HTTP首部字段"><a href="#HTTP首部字段" class="headerlink" title="HTTP首部字段"></a>HTTP首部字段</h2><ul>
+<li><p>结构<br>首部字段名:字段值</p>
+<blockquote>
+<p>若HTTP首部字段重复，则根据浏览器内部逻辑处理。</p>
+</blockquote>
+</li>
+<li><p>4中HTTP首部字段类型</p>
 <ul>
-<li><strong>设置name:</strong> <code>jedis.set(&quot;name&quot;,&quot;asd&quot;);</code></li>
-<li><strong>设置name,如果存在返回0:</strong> <code>jedis.setnx(&quot;name&quot;,&quot;asd&quot;);</code></li>
-<li><strong>获取key为name的值:</strong> <code>jedis.get(&quot;name&quot;)</code> </li>
-<li><strong>获取key为name和name1的value值:</strong> <code>jedis.mget(&quot;name&quot;,&quot;name1&quot;);</code></li>
-<li><strong>自增1:</strong> <code>jedis.incr(&quot;index&quot;)</code> </li>
-<li><strong>自增2:</strong> <code>jedis.inceBy(&quot;index&quot;)</code> </li>
-<li><strong>递减1:</strong> <code>jedis.decr(&quot;index&quot;)</code></li>
-<li><strong>递减2:</strong> <code>jedis.decrBy(&quot;index&quot;)</code></li>
-<li><strong>在name后添加String:</strong> <code>jedis.append(&quot;name&quot;,&quot;asd&quot;)</code></li>
+<li>通用首部字段<br>请求报文和响应报文两方都会使用的首部</li>
+<li>请求首部字段<br>从客户端向服务器端发送请求报文时使用的首部。补充了请求的附加内容、客户端信息、响应内容相关优先级等信息。</li>
+<li>响应首部字段<br>从服务器端向客户端返回响应报文时使用的首部。补充了响应的附加内容，也会要求客户端附加额外的内容信息。</li>
+<li>实体首部字段<br>针对请求报文和响应报文的实体部分使用的首部。补充了资源内容更新时间等与实体有关的信息。</li>
 </ul>
-<hr>
-<h4 id="用处"><a href="#用处" class="headerlink" title="用处"></a>用处</h4><ul>
-<li>复杂的计数功能的缓存</li>
+</li>
+<li><p>HTTP/1.1首部字段一览</p>
+<ul>
+<li>通用首部字段<ul>
+<li>Cache-Control 控制缓存的行为</li>
+<li>Connection 逐跳首部、连接的管理</li>
+<li>Date 创建报文的日期与时间</li>
+<li>Pragma 报文指令</li>
+<li>Trailer 报文末端的首部一览</li>
+<li>Transfer-Encoding 指定报文主体的传输编码方式</li>
+<li>Upgrade 升级为其他协议</li>
+<li>Via 代理服务器相关信息</li>
+<li>Warning 错误通知</li>
+</ul>
+</li>
+<li>请求首部字段<ul>
+<li>Accept 用户代理可处理的媒体类型</li>
+<li>Accept-Charset 优先的字符集</li>
+<li>Accept-Encoding 优先的内容编码</li>
+<li>Accept-Language 优先的语言(自然语言)</li>
+<li>Authorization Web认证信息</li>
+<li>Expect 期待服务器的特定行为</li>
+<li>From 用户的电子邮箱地址</li>
+<li>Host 请求资源所在服务器</li>
+<li>If-Match 比较实体标记(ETag)</li>
+<li>If-Modified-Since 比较资源的更新时间</li>
+<li>If-None-Match 比较实体标记(与 If-Match 相反)</li>
+<li>If-Range 资源未更新时发送实体 Byte 的范围请求</li>
+<li>If-Unmodified-Since 比较资源的更新时间(与If-Modified-Since相反)</li>
+<li>Max-Forwards 最大传输逐跳数</li>
+<li>Proxy-Authorization 代理服务器要求客户端的认证信息</li>
+<li>Range 实体的字节范围请求</li>
+<li>Referer 对请求中 URI 的原始获取方</li>
+<li>TE 传输编码的优先级</li>
+<li>User-Agent HTTP 客户端程序的信息</li>
+</ul>
+</li>
+<li>响应首部字段<ul>
+<li>Accept-Ranges 是否接受字节范围请求</li>
+<li>Age 推算资源创建经过时间</li>
+<li>ETag 资源的匹配信息</li>
+<li>Location 令客户端重定向至指定URI</li>
+<li>Proxy-Authenticate 代理服务器对客户端的认证信息</li>
+<li>Retry-After 对再次发起请求的时机要求</li>
+<li>Server HTTP服务器的安装信息</li>
+<li>Vary 代理服务器缓存的管理信息</li>
+<li>WWW-Authenticate 服务器对客户端的认证信息</li>
+</ul>
+</li>
+<li>实体首部字段<ul>
+<li>Allow 资源可支持的HTTP方法</li>
+<li>Content-Encoding 实体主体适用的编码方式</li>
+<li>Content-Language 实体主体的自然语言</li>
+<li>Content-Length 实体主体的大小(单位:字节)</li>
+<li>Content-Location 替代对应资源的URI</li>
+<li>Content-MD5 实体主体的报文摘要</li>
+<li>Content-Range 实体主体的位置范围</li>
+<li>Content-Type 实体主体的媒体类型</li>
+<li>Expires 实体主体过期的日期时间</li>
+<li>Last-Modified 资源的最后修改日期时间</li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>非HTTP/1.1首部字段<br>在 HTTP 协议通信交互中使用到的首部字段，不限于 RFC2616 中定义的 47 种首部字段。还有 Cookie、Set-Cookie 和 Content-Disposition 等在其他 RFC 中定义的首部字段，它们的使用频率也很高。</p>
+</li>
+<li><p>End-to-end 首部和 Hop-by-hop 首部</p>
+<ul>
+<li>端到端首部(End-to-end Header)<br>分在此类别中的首部会转发给请求 / 响应对应的最终接收目标，且必须保存在由缓存生成的响应中，另外规定它必须被转发。</li>
+<li>逐跳首部(Hop-by-hop Header)<br>分在此类别中的首部只对单次转发有效，会因通过缓存或代理而不再转发。HTTP/1.1 和之后版本中，如果要使用 hop-by-hop 首部，需提供 Connection 首部字段。</li>
+<li>HTTP/1.1中的逐跳首部字段(除此之外都属于端到端首部)<ul>
+<li>Conne ction</li>
+<li>Keep-Alive</li>
+<li>Proxy-Authenticate</li>
+<li>Proxy-Authorization</li>
+<li>Trailer</li>
+<li>TE</li>
+<li>Transfer-Encoding</li>
+<li>Upgrade<h2 id="HTTP-1-1通用首部字段"><a href="#HTTP-1-1通用首部字段" class="headerlink" title="HTTP/1.1通用首部字段"></a>HTTP/1.1通用首部字段</h2></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p>Cache-Control</p>
+<h2 id="请求首部字段"><a href="#请求首部字段" class="headerlink" title="请求首部字段"></a>请求首部字段</h2></li>
+</ul>
+<h2 id="响应首部字段"><a href="#响应首部字段" class="headerlink" title="响应首部字段"></a>响应首部字段</h2><h2 id="实体首部字段"><a href="#实体首部字段" class="headerlink" title="实体首部字段"></a>实体首部字段</h2><h2 id="为Cookie服务的首部字段"><a href="#为Cookie服务的首部字段" class="headerlink" title="为Cookie服务的首部字段"></a>为Cookie服务的首部字段</h2><ul>
+<li>Set-Cookie <ul>
+<li>说明:开始状态管理所使用的Cookie信息 </li>
+<li>首部类型:响应首部字段</li>
+<li>当服务器准备开始管理客户端状态时，会事先告知各种信息，包含的字段有:<ul>
+<li><code>NAME = VALUE</code> 赋予Cookie的名称和值</li>
+<li><code>expires = DATE</code> Cookie的有效期(若不指明则默认到浏览器关闭前为止)<br>一旦Cookie从服务器端发送至客户端，服务器端就不存在可以显式删除Cookie的方法。(但可通过覆盖间接删除)</li>
+<li><code>path = PATH</code> 将服务器上的文件目录作为Cookie的适用对象(若不指定则默认文档所在的文件目录)</li>
+<li><code>domain = 域名</code> 作为Cookie适用对象的域名(若不指定则为创建Cookie的服务器的域名)<br>通过 Cookie 的 domain 属性指定的域名可做到与结尾匹配一致。比如，当指定 example.com 后，除 example.com 以外，<a href="http://www.example.com" target="_blank" rel="noopener">www.example.com</a> 或 www2.example.com 等都可以发送 Cookie。</li>
+<li><code>Secure</code> 仅在HTTPS安全通信时才会发送Cookie</li>
+<li><code>HttpOnly</code> 使Cookie不能被JavaScript脚本访问</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Cookie <ul>
+<li>说明:服务器接收到的Cookie信息</li>
+<li>首部类型:请求首部字段</li>
+</ul>
+</li>
 </ul>
 
       
@@ -644,12 +744,12 @@
 
 
 <div class="article_copyright">
-    <p><span class="copy-title">文章标题:</span>Redis基本类型-字符类型</p>
-    <p><span class="copy-title">文章字数:</span><span class="post-count">193</span></p>
+    <p><span class="copy-title">文章标题:</span>图解HTTP-6-HTTP首部</p>
+    <p><span class="copy-title">文章字数:</span><span class="post-count">1.5k</span></p>
     <p><span class="copy-title">本文作者:</span><a  title="Cynaith">Cynaith</a></p>
-    <p><span class="copy-title">发布时间:</span>2020-05-02, 02:18:02</p>
-    <p><span class="copy-title">最后更新:</span>2020-05-02, 02:18:31</p>
-    <span class="copy-title">原始链接:</span><a class="post-url" href="/2020/05/02/Redis%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B-%E5%AD%97%E7%AC%A6%E7%B1%BB%E5%9E%8B/" title="Redis基本类型-字符类型">https://cynaith.github.io/2020/05/02/Redis%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B-%E5%AD%97%E7%AC%A6%E7%B1%BB%E5%9E%8B/</a>
+    <p><span class="copy-title">发布时间:</span>2020-05-26, 00:59:16</p>
+    <p><span class="copy-title">最后更新:</span>2020-05-26, 01:02:29</p>
+    <span class="copy-title">原始链接:</span><a class="post-url" href="/2020/05/26/%E5%9B%BE%E8%A7%A3HTTP-HTTP%E9%A6%96%E9%83%A8/" title="图解HTTP-6-HTTP首部">https://cynaith.github.io/2020/05/26/%E5%9B%BE%E8%A7%A3HTTP-HTTP%E9%A6%96%E9%83%A8/</a>
     <p>
         <span class="copy-title">版权声明:</span><i class="fa fa-creative-commons"></i> <a rel="license noopener" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。
     </p>

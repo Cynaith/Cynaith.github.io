@@ -4,6 +4,56 @@
   
     
     <entry>
+      <title>图解HTTP-7-确保Web安全的HTTPS</title>
+      <link href="/2020/05/26/%E5%9B%BE%E8%A7%A3HTTP-%E7%A1%AE%E4%BF%9DWeb%E5%AE%89%E5%85%A8%E7%9A%84HTTPS/"/>
+      <url>/2020/05/26/%E5%9B%BE%E8%A7%A3HTTP-%E7%A1%AE%E4%BF%9DWeb%E5%AE%89%E5%85%A8%E7%9A%84HTTPS/</url>
+      
+        <content type="html"><![CDATA[<h2 id="HTTP缺点"><a href="#HTTP缺点" class="headerlink" title="HTTP缺点"></a>HTTP缺点</h2><ul><li><p>通信使用明文(不加密)，内容可能会被窃听</p><ul><li><p>如何加密处理防止被窃听？</p><ul><li><p>将通信加密<br>HTTP 协议中没有加密机制，但可以通过和 SSL(Secure Socket Layer，安全套接层)或<br>TLS(Transport Layer Security，安全层传输协议)的组合使用，加密 HTTP 的通信内容。</p><p>用 SSL 建立安全通信线路之后，就可以在这条线路上进行 HTTP 通信了。<br>与 SSL 组合使用的 HTTP 被称为 HTTPS(HTTP Secure，超文本传输安全协议)或 HTTP over SSL。</p></li><li><p>将内容加密<br>客户端需要对HTTP报文进行加密处理在发送请求，但是内容仍有被篡改的风险。</p></li></ul></li></ul></li><li><p>不验证通信方的身份，因此有可能遭遇伪装</p><ul><li>任何人都可发起请求，会存在以下隐患<ul><li>无法确定请求发送至目标的 Web 服务器是否是按真实意图返回响应的那台服务器。有可能是已伪装的 Web 服务器。</li><li>无法确定响应返回到的客户端是否是按真实意图接收响 应的那个客户端。有可能是已伪装的客户端。</li><li>无法确定正在通信的对方是否具备访问权限。因为某些 Web 服务器上保存着重要的信息，只想发给特定用户通信的权限。</li><li>无法判定请求是来自何方、出自谁手。</li><li>即使是无意义的请求也会照单全收。无法阻止海量请求下的 DoS 攻击(Denial of Service，拒绝服务攻击)。</li></ul></li><li>查明对手的证书<ul><li>使用SSL可以确定通信方</li></ul></li></ul></li><li><p>无法证明报文的完整性，所以有可能已遭篡改</p><ul><li>接收到的内容可能有误<br>请求或响应在传输途中，遭攻击者拦截并篡改内容的攻击称为中间人攻击(MITM)</li><li>如何防止篡改<br>常用的是 MD5 和 SHA-1等散列值校验的方法，用来确认文件的数字签名方法。(可惜的是，用这些方法也依然无法百分百保证确认结果正确。因为 PGP 和 MD5 本身被改写的话，用户是没有办法意识到的。)</li></ul><p>为了有效防止这些弊端，有必要使用 HTTPS。SSL 提供认证和加 密处理及摘要功能。仅靠 HTTP 确保完整性是非常困难的，因此 通过和其他协议组合使用来实现这个目标。</p></li></ul><h2 id="HTTP-加密-认证-完整性保护-HTTPS"><a href="#HTTP-加密-认证-完整性保护-HTTPS" class="headerlink" title="HTTP+加密+认证+完整性保护=HTTPS"></a>HTTP+加密+认证+完整性保护=HTTPS</h2><p>HTTPS并非是应用层的一种新协议，只是HTTP通信接口部分用SSL和TLS协议代替。</p><p>通常，HTTP直接和TCP通信，当使用SSL时，则变为先和SSL通信，再由SSL和TCP通信。</p><ul><li><p>相互交换密钥的公开密钥加密技术<br>SSL 采用一种叫做公开密钥加密(Public-key cryptography)的加密处理方式。</p><ul><li><p>共享密钥加密的困境<br>加密和解密用同一个密钥的方式称为共享密钥加密，也叫做对称密钥加密。但发送密钥也有被窃听的风险。</p></li><li><p>使用两把密钥的公开密钥加密<br>发送密文一方使用公开密钥进行加密处理，对方收到信息后，在用自己的私有密钥进行解密。(解密过程就是对离散对数进行求值)</p></li><li><p>HTTPS采用混合加密机制<br>在交换密钥环节使用公开密钥加密方式，之后的建立通信交换报文阶段则使用共享密钥加密方式。</p><ol><li>使用公开密钥加密方式安全地交换在稍后的共享密钥加密中要使用的密钥</li><li>确保交换的密钥是安全的前提下，使用共享密钥加密方式进行通信</li></ol></li></ul></li><li><p>证明公开密钥正确性的证书  </p><blockquote><p>防止公开密钥在传输途中，被攻击者替换。</p></blockquote></li></ul><p>为了解决上述问题，可以使用由数字证书认证机构和其相关机关颁发的公开密钥证书。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 图解HTTP </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 计算机网络 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>图解HTTP-6-HTTP首部</title>
+      <link href="/2020/05/26/%E5%9B%BE%E8%A7%A3HTTP-HTTP%E9%A6%96%E9%83%A8/"/>
+      <url>/2020/05/26/%E5%9B%BE%E8%A7%A3HTTP-HTTP%E9%A6%96%E9%83%A8/</url>
+      
+        <content type="html"><![CDATA[<h2 id="HTTP报文首部"><a href="#HTTP报文首部" class="headerlink" title="HTTP报文首部"></a>HTTP报文首部</h2><p>HTTP协议的请求和响应报文中必定包含HTTP首部。首部内容为客户端和服务器分别处理请求和响应提供所需要的信息。</p><p>报文首部由几个字段构成</p><h4 id="HTTP请求报文"><a href="#HTTP请求报文" class="headerlink" title="HTTP请求报文"></a>HTTP请求报文</h4><p>在请求中，HTTP报文由方法、URI、HTTP版本(前三个为请求行)、HTTP首部字段等部分构成。</p><h4 id="HTTP响应报文"><a href="#HTTP响应报文" class="headerlink" title="HTTP响应报文"></a>HTTP响应报文</h4><p>在响应中，HTTP报文由HTTP版本、状态码(数字和原因短语)、HTTP首部字段构成</p><h2 id="HTTP首部字段"><a href="#HTTP首部字段" class="headerlink" title="HTTP首部字段"></a>HTTP首部字段</h2><ul><li><p>结构<br>首部字段名:字段值</p><blockquote><p>若HTTP首部字段重复，则根据浏览器内部逻辑处理。</p></blockquote></li><li><p>4中HTTP首部字段类型</p><ul><li>通用首部字段<br>请求报文和响应报文两方都会使用的首部</li><li>请求首部字段<br>从客户端向服务器端发送请求报文时使用的首部。补充了请求的附加内容、客户端信息、响应内容相关优先级等信息。</li><li>响应首部字段<br>从服务器端向客户端返回响应报文时使用的首部。补充了响应的附加内容，也会要求客户端附加额外的内容信息。</li><li>实体首部字段<br>针对请求报文和响应报文的实体部分使用的首部。补充了资源内容更新时间等与实体有关的信息。</li></ul></li><li><p>HTTP/1.1首部字段一览</p><ul><li>通用首部字段<ul><li>Cache-Control 控制缓存的行为</li><li>Connection 逐跳首部、连接的管理</li><li>Date 创建报文的日期与时间</li><li>Pragma 报文指令</li><li>Trailer 报文末端的首部一览</li><li>Transfer-Encoding 指定报文主体的传输编码方式</li><li>Upgrade 升级为其他协议</li><li>Via 代理服务器相关信息</li><li>Warning 错误通知</li></ul></li><li>请求首部字段<ul><li>Accept 用户代理可处理的媒体类型</li><li>Accept-Charset 优先的字符集</li><li>Accept-Encoding 优先的内容编码</li><li>Accept-Language 优先的语言(自然语言)</li><li>Authorization Web认证信息</li><li>Expect 期待服务器的特定行为</li><li>From 用户的电子邮箱地址</li><li>Host 请求资源所在服务器</li><li>If-Match 比较实体标记(ETag)</li><li>If-Modified-Since 比较资源的更新时间</li><li>If-None-Match 比较实体标记(与 If-Match 相反)</li><li>If-Range 资源未更新时发送实体 Byte 的范围请求</li><li>If-Unmodified-Since 比较资源的更新时间(与If-Modified-Since相反)</li><li>Max-Forwards 最大传输逐跳数</li><li>Proxy-Authorization 代理服务器要求客户端的认证信息</li><li>Range 实体的字节范围请求</li><li>Referer 对请求中 URI 的原始获取方</li><li>TE 传输编码的优先级</li><li>User-Agent HTTP 客户端程序的信息</li></ul></li><li>响应首部字段<ul><li>Accept-Ranges 是否接受字节范围请求</li><li>Age 推算资源创建经过时间</li><li>ETag 资源的匹配信息</li><li>Location 令客户端重定向至指定URI</li><li>Proxy-Authenticate 代理服务器对客户端的认证信息</li><li>Retry-After 对再次发起请求的时机要求</li><li>Server HTTP服务器的安装信息</li><li>Vary 代理服务器缓存的管理信息</li><li>WWW-Authenticate 服务器对客户端的认证信息</li></ul></li><li>实体首部字段<ul><li>Allow 资源可支持的HTTP方法</li><li>Content-Encoding 实体主体适用的编码方式</li><li>Content-Language 实体主体的自然语言</li><li>Content-Length 实体主体的大小(单位:字节)</li><li>Content-Location 替代对应资源的URI</li><li>Content-MD5 实体主体的报文摘要</li><li>Content-Range 实体主体的位置范围</li><li>Content-Type 实体主体的媒体类型</li><li>Expires 实体主体过期的日期时间</li><li>Last-Modified 资源的最后修改日期时间</li></ul></li></ul></li><li><p>非HTTP/1.1首部字段<br>在 HTTP 协议通信交互中使用到的首部字段，不限于 RFC2616 中定义的 47 种首部字段。还有 Cookie、Set-Cookie 和 Content-Disposition 等在其他 RFC 中定义的首部字段，它们的使用频率也很高。</p></li><li><p>End-to-end 首部和 Hop-by-hop 首部</p><ul><li>端到端首部(End-to-end Header)<br>分在此类别中的首部会转发给请求 / 响应对应的最终接收目标，且必须保存在由缓存生成的响应中，另外规定它必须被转发。</li><li>逐跳首部(Hop-by-hop Header)<br>分在此类别中的首部只对单次转发有效，会因通过缓存或代理而不再转发。HTTP/1.1 和之后版本中，如果要使用 hop-by-hop 首部，需提供 Connection 首部字段。</li><li>HTTP/1.1中的逐跳首部字段(除此之外都属于端到端首部)<ul><li>Conne ction</li><li>Keep-Alive</li><li>Proxy-Authenticate</li><li>Proxy-Authorization</li><li>Trailer</li><li>TE</li><li>Transfer-Encoding</li><li>Upgrade<h2 id="HTTP-1-1通用首部字段"><a href="#HTTP-1-1通用首部字段" class="headerlink" title="HTTP/1.1通用首部字段"></a>HTTP/1.1通用首部字段</h2></li></ul></li></ul></li><li><p>Cache-Control</p><h2 id="请求首部字段"><a href="#请求首部字段" class="headerlink" title="请求首部字段"></a>请求首部字段</h2></li></ul><h2 id="响应首部字段"><a href="#响应首部字段" class="headerlink" title="响应首部字段"></a>响应首部字段</h2><h2 id="实体首部字段"><a href="#实体首部字段" class="headerlink" title="实体首部字段"></a>实体首部字段</h2><h2 id="为Cookie服务的首部字段"><a href="#为Cookie服务的首部字段" class="headerlink" title="为Cookie服务的首部字段"></a>为Cookie服务的首部字段</h2><ul><li>Set-Cookie <ul><li>说明:开始状态管理所使用的Cookie信息 </li><li>首部类型:响应首部字段</li><li>当服务器准备开始管理客户端状态时，会事先告知各种信息，包含的字段有:<ul><li><code>NAME = VALUE</code> 赋予Cookie的名称和值</li><li><code>expires = DATE</code> Cookie的有效期(若不指明则默认到浏览器关闭前为止)<br>一旦Cookie从服务器端发送至客户端，服务器端就不存在可以显式删除Cookie的方法。(但可通过覆盖间接删除)</li><li><code>path = PATH</code> 将服务器上的文件目录作为Cookie的适用对象(若不指定则默认文档所在的文件目录)</li><li><code>domain = 域名</code> 作为Cookie适用对象的域名(若不指定则为创建Cookie的服务器的域名)<br>通过 Cookie 的 domain 属性指定的域名可做到与结尾匹配一致。比如，当指定 example.com 后，除 example.com 以外，<a href="http://www.example.com" target="_blank" rel="noopener">www.example.com</a> 或 www2.example.com 等都可以发送 Cookie。</li><li><code>Secure</code> 仅在HTTPS安全通信时才会发送Cookie</li><li><code>HttpOnly</code> 使Cookie不能被JavaScript脚本访问</li></ul></li></ul></li><li>Cookie <ul><li>说明:服务器接收到的Cookie信息</li><li>首部类型:请求首部字段</li></ul></li></ul>]]></content>
+      
+      
+      <categories>
+          
+          <category> 图解HTTP </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 计算机网络 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>图解HTTP-5-与HTTP协作的Web服务器</title>
       <link href="/2020/05/25/%E5%9B%BE%E8%A7%A3HTTP-%E4%B8%8EHTTP%E5%8D%8F%E4%BD%9C%E7%9A%84Web%E6%9C%8D%E5%8A%A1%E5%99%A8/"/>
       <url>/2020/05/25/%E5%9B%BE%E8%A7%A3HTTP-%E4%B8%8EHTTP%E5%8D%8F%E4%BD%9C%E7%9A%84Web%E6%9C%8D%E5%8A%A1%E5%99%A8/</url>
