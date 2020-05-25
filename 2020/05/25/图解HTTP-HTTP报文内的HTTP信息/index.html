@@ -2,9 +2,9 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>Redis扩展类型-位图 | Cynaith Blog</title>
-  <meta name="keywords" content=" Redis基本类型 ">
-  <meta name="description" content="Redis扩展类型-位图 | Cynaith Blog">
+  <title>图解HTTP-HTTP报文内的HTTP信息 | Cynaith Blog</title>
+  <meta name="keywords" content=" 计算机网络 ">
+  <meta name="description" content="图解HTTP-HTTP报文内的HTTP信息 | Cynaith Blog">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="description" content="HTTP报文 用于HTTP协议交互的信息被称为HTTP报文。HTTP报文是由多行(用CR+LF坐换行符)数据构成的字符串文本。 请求端的HTTP报文叫做 请求报文 响应端的叫做 响应报文   HTTP报文大致分为报文首部和报文主体两块(由空行划分)，通常并不一定要有报文主体。  请求报文结构 报文首部 请求行包含用于请求的方法，请求URI和HTTP版本 GET&#x2F;HTTP&#x2F;1.1 请求首部字段 通用">
 <meta property="og:type" content="article">
@@ -500,9 +500,9 @@
 </aside>
 <div class="post">
     <div class="pjax">
-        <article id="post-Redis扩展类型-位图" class="article article-type-post" itemscope itemprop="blogPost">
+        <article id="post-图解HTTP-HTTP报文内的HTTP信息" class="article article-type-post" itemscope itemprop="blogPost">
     
-        <h1 class="article-title">Redis扩展类型-位图</h1>
+        <h1 class="article-title">图解HTTP-HTTP报文内的HTTP信息</h1>
     
     <div class="article-meta">
         
@@ -510,26 +510,26 @@
         
         <span class="book">
             
-                <a  data-rel="Redis">Redis</a>
+                <a  data-rel="图解HTTP">图解HTTP</a>
             
         </span>
         
         
         <span class="tag">
             
-            <a class="color5">Redis基本类型</a>
+            <a class="color1">计算机网络</a>
             
         </span>
         
     </div>
     <div class="article-meta">
         
-        创建时间:<time class="date" title='更新时间: 2020-05-02 02:22:57'>2020-05-02 02:20</time>
+        创建时间:<time class="date" title='更新时间: 2020-05-25 15:49:31'>2020-05-25 15:43</time>
         
     </div>
     <div class="article-meta">
         
-        <span>字数:501</span>
+        <span>字数:805</span>
         
         
         <span id="busuanzi_container_page_pv">
@@ -559,7 +559,7 @@
     
     <div class="toc-ref">
     
-        <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#位图"><span class="toc-text">位图</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#基本用法"><span class="toc-text">基本用法</span></a></li></ol></li></ol></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#HTTP报文"><span class="toc-text">HTTP报文</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#编码提升传输速率"><span class="toc-text">编码提升传输速率</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#获取部分内容的范围请求"><span class="toc-text">获取部分内容的范围请求</span></a></li></ol>
     
 <style>
     .left-col .switch-btn,
@@ -575,52 +575,73 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h3 id="位图"><a href="#位图" class="headerlink" title="位图"></a>位图</h3><hr>
+        <h2 id="HTTP报文"><a href="#HTTP报文" class="headerlink" title="HTTP报文"></a>HTTP报文</h2><blockquote>
+<p>用于HTTP协议交互的信息被称为HTTP报文。HTTP报文是由多行(用CR+LF坐换行符)数据构成的字符串文本。</p>
+<p>请求端的HTTP报文叫做 <strong>请求报文</strong></p>
+<p>响应端的叫做 <strong>响应报文</strong> </p>
+</blockquote>
+<p>HTTP报文大致分为报文首部和报文主体两块(由空行划分)，通常并不一定要有报文主体。</p>
 <ul>
-<li>什么时候需要用到位图?<ul>
-<li>平时开发中有一些bool型数据需要存储,比如用户一年的签到记录。为了解决存储空间,Redis提供了位图数据结构,这样365天就是365位,46个字节。</li>
+<li>请求报文结构<ul>
+<li>报文首部<ul>
+<li>请求行<br>包含用于请求的方法，请求URI和HTTP版本 <code>GET/HTTP/1.1</code></li>
+<li>请求首部字段</li>
+<li>通用首部字段</li>
+<li>实体首部字段</li>
+<li>其他</li>
 </ul>
 </li>
-<li>位图是什么?<ul>
-<li>其实就是普通的字符串,也就是byte数组。</li>
+<li>空行(CR+LF)</li>
+<li>报文主体</li>
 </ul>
 </li>
-<li>怎么使用位图?<ul>
-<li>可以使用普通的get/set直接获取和设置整个位图的内容,也可以使用位图操作getbit/setbit等将byte数组看成”位数组”来处理。</li>
+<li>响应报文结构<ul>
+<li>报文首部<ul>
+<li>状态行<br>包含表明响应结果的状态码，原因短语和HTTP版本 <code>HTTP/1.1 200 OK</code></li>
+<li>响应首部字段</li>
+<li>通用首部字段</li>
+<li>实体首部字段</li>
+<li>其他</li>
+</ul>
+</li>
+<li>空行(CR+LF)</li>
+<li>报文主体</li>
 </ul>
 </li>
 </ul>
-<hr>
-<h5 id="基本用法"><a href="#基本用法" class="headerlink" title="基本用法"></a>基本用法</h5><ul>
-<li><p>Redis的位数组是自动扩展的,如果设置了某个偏移位置超出了现有的内容范围,就会自动将位数组进行零扩充。</p>
-</li>
-<li><p>零存整取</p>
+<h2 id="编码提升传输速率"><a href="#编码提升传输速率" class="headerlink" title="编码提升传输速率"></a>编码提升传输速率</h2><blockquote>
+<p>HTTP在传输数据时进行编码，可以有效地处理大量的访问请求。</p>
+</blockquote>
 <ul>
-<li>h的ASCII码:0b1101000<br>e的ASCII码:0b1100101  <figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; setbit s 1 1</span><br><span class="line">(integer) 0</span><br><span class="line">127.0.0.1:6379&gt; setbit s 2 1</span><br><span class="line">(integer) 0</span><br><span class="line">127.0.0.1:6379&gt; setbit s 4 1</span><br><span class="line">(integer) 0</span><br><span class="line">127.0.0.1:6379&gt; setbit s 9 1</span><br><span class="line">(integer) 0</span><br><span class="line">127.0.0.1:6379&gt; setbit s 10 1</span><br><span class="line">(integer) 0</span><br><span class="line">127.0.0.1:6379&gt; setbit s 13 1</span><br><span class="line">(integer) 0</span><br><span class="line">127.0.0.1:6379&gt; setbit s 15 1</span><br><span class="line">(integer) 0</span><br><span class="line">127.0.0.1:6379&gt; get s</span><br><span class="line">"he"</span><br></pre></td></tr></table></figure></li>
-</ul>
-</li>
-<li><p>整存零取</p>
+<li><p>报文主体和实体主体</p>
 <ul>
-<li>h的ASCII码:0b1101000  <figure class="highlight shell"><figcaption><span>script</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">127.0.0.1:6379&gt; set w h</span><br><span class="line">(integer) 0</span><br><span class="line">127.0.0.1:6379&gt; getbit w 1</span><br><span class="line">(integer) 1</span><br><span class="line">127.0.0.1:6379&gt; getbit w 2</span><br><span class="line">(integer) 1</span><br></pre></td></tr></table></figure></li>
+<li>报文(message)<br>是HTTP通信的基本单位，由8位组字节流组成，通过HTTP通信传输。</li>
+<li>实体(entity)<br>作为请求或响应的有效载荷数据被传输，内容由实体首部和实体主体组成。</li>
 </ul>
+<blockquote>
+<p>HTTP报文的主体用于传输请求或响应的实体主体。</p>
+<p>通常报文主体等于实体主体，只有在传输中进行编码操作时，实体主体内容发生改变，才导致它和报文主体产生差异。</p>
+</blockquote>
 </li>
-<li><p>如果对应位的字节是不可打印字符,redis-cli会显示该字符的十六进制形式</p>
+<li><p>压缩传输的内容编码</p>
+<blockquote>
+<p>内容编码类似压缩文件，常用的内容编码有 gzip、compress、deflate、identity</p>
+</blockquote>
+<p>内容编码指明应用在实体内容上的编码格式，并保持实体信息原样压缩。内容编码后的实体由客户端接收并负责解码。</p>
 </li>
-<li><p>Redis提供了位图统计指令bitcount和位图查找指令bitpos</p>
-<ul>
-<li><strong>bitcount:</strong> 用来统计指定位置范围内的1的个数。<ul>
-<li>统计用户一共签到多少天</li>
+<li><p>分割发送的分块传输编码</p>
+<blockquote>
+<p>在传输大容量数据时，通过把数据分割成多块，能够让浏览器逐步加载页面。这种功能叫做分块传输编码。</p>
+</blockquote>
+<p>分块传输编码会将实体主体分成多个部分，每一块用16进制来标记块的大小，而实体主体最后一块会使用”0(CR+LF)”来标记。</p>
+<p>客户端负责解码，恢复到编码前的实体主体。</p>
+</li>
 </ul>
-</li>
-<li><strong>bitpos:</strong> 用来查找指定范围内出现的第一个0或1。  <ul>
-<li>查找用户从哪一天开始第一次签到。 </li>
-</ul>
-</li>
-<li>如果指定范围参数[start,end],就可以统计在某个时间范围内用户签到了多少天，用户自某天以后哪天开始签到</li>
-<li>但start和end是字节索引,所以指定的位范围必须是<font color=#ff4911>8的倍数</font></li>
-</ul>
-</li>
-</ul>
+<h2 id="获取部分内容的范围请求"><a href="#获取部分内容的范围请求" class="headerlink" title="获取部分内容的范围请求"></a>获取部分内容的范围请求</h2><blockquote>
+<p>如果下载过程中遇到网络中断的情况，那就必须重头开始，为了解决上述问题，需要一种可恢复的机制。即能从之前下载中断处恢复下载。</p>
+</blockquote>
+<p>  执行范围请求时，会用到首部字段Range来指定资源的byte范围<br>  <code>Range: bytes = 5001-10000</code> 5001<del>10000字节<br>  <code>Range: bytes = 5001-</code> 从5001字节之后全部的<br>  <code>Range: bytes = -3000,5000-7000</code> 从头开始3000字节和5000</del>7000<br>  对于此类请求，响应会返回状态码为206 Partial Content的响应报文。 对于多重范围的请求，响应会在首部字段Content-Type标明multipart/byteranges后返回响应报文。</p>
+<p>  注: 如果服务端无法响应范围请求，则会返回状态码 200 OK 和完整的实体请求。</p>
 
       
        <hr><span style="font-style: italic;color: gray;"> 转载请注明来源，欢迎对文章中的引用来源进行考证，欢迎指出任何有错误或不够清晰的表达。可以在下面评论区评论，也可以邮件至 yanglau0527@gmail.com </span>
@@ -634,12 +655,12 @@
 
 
 <div class="article_copyright">
-    <p><span class="copy-title">文章标题:</span>Redis扩展类型-位图</p>
-    <p><span class="copy-title">文章字数:</span><span class="post-count">501</span></p>
+    <p><span class="copy-title">文章标题:</span>图解HTTP-HTTP报文内的HTTP信息</p>
+    <p><span class="copy-title">文章字数:</span><span class="post-count">805</span></p>
     <p><span class="copy-title">本文作者:</span><a  title="Cynaith">Cynaith</a></p>
-    <p><span class="copy-title">发布时间:</span>2020-05-02, 02:20:35</p>
-    <p><span class="copy-title">最后更新:</span>2020-05-02, 02:22:57</p>
-    <span class="copy-title">原始链接:</span><a class="post-url" href="/2020/05/02/Redis%E6%89%A9%E5%B1%95%E7%B1%BB%E5%9E%8B-%E4%BD%8D%E5%9B%BE/" title="Redis扩展类型-位图">https://cynaith.github.io/2020/05/02/Redis%E6%89%A9%E5%B1%95%E7%B1%BB%E5%9E%8B-%E4%BD%8D%E5%9B%BE/</a>
+    <p><span class="copy-title">发布时间:</span>2020-05-25, 15:43:16</p>
+    <p><span class="copy-title">最后更新:</span>2020-05-25, 15:49:31</p>
+    <span class="copy-title">原始链接:</span><a class="post-url" href="/2020/05/25/%E5%9B%BE%E8%A7%A3HTTP-HTTP%E6%8A%A5%E6%96%87%E5%86%85%E7%9A%84HTTP%E4%BF%A1%E6%81%AF/" title="图解HTTP-HTTP报文内的HTTP信息">https://cynaith.github.io/2020/05/25/%E5%9B%BE%E8%A7%A3HTTP-HTTP%E6%8A%A5%E6%96%87%E5%86%85%E7%9A%84HTTP%E4%BF%A1%E6%81%AF/</a>
     <p>
         <span class="copy-title">版权声明:</span><i class="fa fa-creative-commons"></i> <a rel="license noopener" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。
     </p>
