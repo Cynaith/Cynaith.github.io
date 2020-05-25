@@ -2,9 +2,9 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>设计模式-享元模式 | Cynaith Blog</title>
-  <meta name="keywords" content=" 设计模式 , 享元模式 ">
-  <meta name="description" content="设计模式-享元模式 | Cynaith Blog">
+  <title>图解HTTP-简单的HTTP协议 | Cynaith Blog</title>
+  <meta name="keywords" content=" 计算机网络 ">
+  <meta name="description" content="图解HTTP-简单的HTTP协议 | Cynaith Blog">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="description" content="请求报文和响应报文 请求报文请求方法、请求URI、协议版本、可选的请求首部字段、内容实体。   响应报文协议版本、状态码、用以解释状态码的原因短语、可选的响应首部字段、实体主体。  HTTP是不保存状态的协议(无状态协议) 在HTTP这个级别，协议对于发送过的请求或响应都不做持久化处理  每当有对应的新响应产生，协议本身并不保留之前一切的请求或响应报文的信息。这是为了更快地处理大量事务，确保协议的">
 <meta property="og:type" content="article">
@@ -492,9 +492,9 @@
 </aside>
 <div class="post">
     <div class="pjax">
-        <article id="post-设计模式-享元模式" class="article article-type-post" itemscope itemprop="blogPost">
+        <article id="post-图解HTTP-简单的HTTP协议" class="article article-type-post" itemscope itemprop="blogPost">
     
-        <h1 class="article-title">设计模式-享元模式</h1>
+        <h1 class="article-title">图解HTTP-简单的HTTP协议</h1>
     
     <div class="article-meta">
         
@@ -502,28 +502,26 @@
         
         <span class="book">
             
-                <a  data-rel="设计模式">设计模式</a>
+                <a  data-rel="图解HTTP">图解HTTP</a>
             
         </span>
         
         
         <span class="tag">
             
-            <a class="color5">设计模式</a>
-            
-            <a class="color5">享元模式</a>
+            <a class="color1">计算机网络</a>
             
         </span>
         
     </div>
     <div class="article-meta">
         
-        创建时间:<time class="date" title='更新时间: 2020-05-02 01:26:34'>2020-05-02 01:22</time>
+        创建时间:<time class="date" title='更新时间: 2020-05-25 13:36:15'>2020-05-25 13:35</time>
         
     </div>
     <div class="article-meta">
         
-        <span>字数:265</span>
+        <span>字数:566</span>
         
         
         <span id="busuanzi_container_page_pv">
@@ -553,7 +551,7 @@
     
     <div class="toc-ref">
     
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#享元模式"><span class="toc-text">享元模式</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#请求报文和响应报文"><span class="toc-text">请求报文和响应报文</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HTTP是不保存状态的协议-无状态协议"><span class="toc-text">HTTP是不保存状态的协议(无状态协议)</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HTTP方法"><span class="toc-text">HTTP方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#持久连接节省通信量"><span class="toc-text">持久连接节省通信量</span></a></li></ol>
     
 <style>
     .left-col .switch-btn,
@@ -569,18 +567,51 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="享元模式"><a href="#享元模式" class="headerlink" title="享元模式"></a>享元模式</h2><blockquote>
-<p>用于减少创建对象的数量 如String</p>
-</blockquote>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@USER</span>: lynn</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@DATE</span>: 2020/4/26</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> 享元模式 </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        字符串 string1 = 对象工厂.getChars(<span class="string">"a"</span>);</span><br><span class="line">        string1.print();</span><br><span class="line">        字符串 string2 = 对象工厂.getChars(<span class="string">"a"</span>);</span><br><span class="line">        string2.print();</span><br><span class="line">        字符串 string3 = 对象工厂.getChars(<span class="string">"b"</span>);</span><br><span class="line">        string3.print();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">interface</span> 对象</span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">print</span><span class="params">()</span></span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> 字符串 <span class="keyword">implements</span> 对象</span>&#123;</span><br><span class="line">    String chars;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> 字符串(String chars) &#123;</span><br><span class="line">        <span class="keyword">this</span>.chars = chars;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getChars</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> chars;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setChars</span><span class="params">(String chars)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.chars = chars;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">print</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        System.out.println(chars);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> 对象工厂</span>&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> HashMap&lt;String,字符串&gt; 字符串对象池 = <span class="keyword">new</span> HashMap&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> 字符串 getChars(String chars)&#123;</span><br><span class="line">        字符串 字符串对象 = 字符串对象池.get(chars);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (字符串对象 == <span class="keyword">null</span>)&#123;</span><br><span class="line">            字符串对象 = <span class="keyword">new</span> 字符串(chars);</span><br><span class="line">            字符串对象池.put(chars,字符串对象);</span><br><span class="line">            System.out.println(<span class="string">"向字符串对象池插入一个对象:"</span>+字符串对象.toString());</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> 字符串对象;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>使用场景<ul>
-<li>系统中有大量相似对象</li>
-<li>缓冲池场景</li>
+        <h2 id="请求报文和响应报文"><a href="#请求报文和响应报文" class="headerlink" title="请求报文和响应报文"></a>请求报文和响应报文</h2><ul>
+<li>请求报文<br>请求方法、请求URI、协议版本、可选的请求首部字段、内容实体。  </li>
+<li>响应报文<br>协议版本、状态码、用以解释状态码的原因短语、可选的响应首部字段、实体主体。</li>
 </ul>
+<h2 id="HTTP是不保存状态的协议-无状态协议"><a href="#HTTP是不保存状态的协议-无状态协议" class="headerlink" title="HTTP是不保存状态的协议(无状态协议)"></a>HTTP是不保存状态的协议(无状态协议)</h2><blockquote>
+<p>在HTTP这个级别，协议对于发送过的请求或响应都不做持久化处理</p>
+</blockquote>
+<p>每当有对应的新响应产生，协议本身并不保留之前一切的请求或响应报文的信息。<br>这是为了更快地处理大量事务，确保协议的可伸缩性。</p>
+<p>但是随着Web发展，用户需要在网站保存登陆状态。<br>HTTP/1.1虽然是无状态协议，但引用Cookie技术后，就可以管理状态。</p>
+<h2 id="HTTP方法"><a href="#HTTP方法" class="headerlink" title="HTTP方法"></a>HTTP方法</h2><ul>
+<li><p>GET 获取资源</p>
+</li>
+<li><p>POST 传输实体主体</p>
+</li>
+<li><p>PUT 传输文件</p>
+<blockquote>
+<p>HTTP/1.1的PUT方法不带验证机制，任何人都可以上传文件，因此一般Web网站不使用该方法。</p>
+</blockquote>
+</li>
+<li><p>HEAD 获得报文首部</p>
 </li>
 </ul>
+<p>HEAD 方法和 GET 方法一样，只是不返回报文主体部分。用于确认 URI 的有效性及资源更新的日期时间等。</p>
+<ul>
+<li><p>DELETE 删除文件</p>
+<blockquote>
+<p>一般也不使用</p>
+</blockquote>
+</li>
+<li><p>OPTIONS 询问支持的方法</p>
+</li>
+<li><p>TRACE 追踪路径</p>
+<blockquote>
+<p>易引发XST(跨站追踪)攻击，所以用不到。</p>
+</blockquote>
+</li>
+<li><p>CONNECT 要求用隧道协议连接代理</p>
+</li>
+</ul>
+<p>CONNECT 方法要求在与代理服务器通信时建立隧道，实现用隧道协议进行 TCP 通信。<br>主要使用 SSL(Secure Sockets Layer，安全套接 层)和 TLS(Transport Layer Security，传输层安全)协议把通信内容加密后经网络隧道传输。</p>
+<p>格式:<code>CONNECT 代理服务器名:端口号 HTTP版本</code></p>
+<h2 id="持久连接节省通信量"><a href="#持久连接节省通信量" class="headerlink" title="持久连接节省通信量"></a>持久连接节省通信量</h2><p>为了解决多次通信的开销问题，HTTP/1.1和一部分HTTP/1.0想出了持久连接(HTTP Persistent Connections，也称为HTTP keep-alive或HTTP connection reuse)的方法。</p>
+<p>特点:只要任意一端没有明确提出断开连接，则保持TCP连接状态。</p>
+<p>注:在HTTP/1.1中，所有连接默认是持久连接</p>
+<p>附:管线化(pipelining)技术比持久连接还要快。</p>
 
       
        <hr><span style="font-style: italic;color: gray;"> 转载请注明来源，欢迎对文章中的引用来源进行考证，欢迎指出任何有错误或不够清晰的表达。可以在下面评论区评论，也可以邮件至 yanglau0527@gmail.com </span>
@@ -594,12 +625,12 @@
 
 
 <div class="article_copyright">
-    <p><span class="copy-title">文章标题:</span>设计模式-享元模式</p>
-    <p><span class="copy-title">文章字数:</span><span class="post-count">265</span></p>
+    <p><span class="copy-title">文章标题:</span>图解HTTP-简单的HTTP协议</p>
+    <p><span class="copy-title">文章字数:</span><span class="post-count">566</span></p>
     <p><span class="copy-title">本文作者:</span><a  title="Cynaith">Cynaith</a></p>
-    <p><span class="copy-title">发布时间:</span>2020-05-02, 01:22:45</p>
-    <p><span class="copy-title">最后更新:</span>2020-05-02, 01:26:34</p>
-    <span class="copy-title">原始链接:</span><a class="post-url" href="/2020/05/02/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E4%BA%AB%E5%85%83%E6%A8%A1%E5%BC%8F/" title="设计模式-享元模式">https://cynaith.github.io/2020/05/02/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E4%BA%AB%E5%85%83%E6%A8%A1%E5%BC%8F/</a>
+    <p><span class="copy-title">发布时间:</span>2020-05-25, 13:35:52</p>
+    <p><span class="copy-title">最后更新:</span>2020-05-25, 13:36:15</p>
+    <span class="copy-title">原始链接:</span><a class="post-url" href="/2020/05/25/%E5%9B%BE%E8%A7%A3HTTP-%E7%AE%80%E5%8D%95%E7%9A%84HTTP%E5%8D%8F%E8%AE%AE/" title="图解HTTP-简单的HTTP协议">https://cynaith.github.io/2020/05/25/%E5%9B%BE%E8%A7%A3HTTP-%E7%AE%80%E5%8D%95%E7%9A%84HTTP%E5%8D%8F%E8%AE%AE/</a>
     <p>
         <span class="copy-title">版权声明:</span><i class="fa fa-creative-commons"></i> <a rel="license noopener" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。
     </p>

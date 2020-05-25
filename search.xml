@@ -4,6 +4,31 @@
   
     
     <entry>
+      <title>图解HTTP-简单的HTTP协议</title>
+      <link href="/2020/05/25/%E5%9B%BE%E8%A7%A3HTTP-%E7%AE%80%E5%8D%95%E7%9A%84HTTP%E5%8D%8F%E8%AE%AE/"/>
+      <url>/2020/05/25/%E5%9B%BE%E8%A7%A3HTTP-%E7%AE%80%E5%8D%95%E7%9A%84HTTP%E5%8D%8F%E8%AE%AE/</url>
+      
+        <content type="html"><![CDATA[<h2 id="请求报文和响应报文"><a href="#请求报文和响应报文" class="headerlink" title="请求报文和响应报文"></a>请求报文和响应报文</h2><ul><li>请求报文<br>请求方法、请求URI、协议版本、可选的请求首部字段、内容实体。  </li><li>响应报文<br>协议版本、状态码、用以解释状态码的原因短语、可选的响应首部字段、实体主体。</li></ul><h2 id="HTTP是不保存状态的协议-无状态协议"><a href="#HTTP是不保存状态的协议-无状态协议" class="headerlink" title="HTTP是不保存状态的协议(无状态协议)"></a>HTTP是不保存状态的协议(无状态协议)</h2><blockquote><p>在HTTP这个级别，协议对于发送过的请求或响应都不做持久化处理</p></blockquote><p>每当有对应的新响应产生，协议本身并不保留之前一切的请求或响应报文的信息。<br>这是为了更快地处理大量事务，确保协议的可伸缩性。</p><p>但是随着Web发展，用户需要在网站保存登陆状态。<br>HTTP/1.1虽然是无状态协议，但引用Cookie技术后，就可以管理状态。</p><h2 id="HTTP方法"><a href="#HTTP方法" class="headerlink" title="HTTP方法"></a>HTTP方法</h2><ul><li><p>GET 获取资源</p></li><li><p>POST 传输实体主体</p></li><li><p>PUT 传输文件</p><blockquote><p>HTTP/1.1的PUT方法不带验证机制，任何人都可以上传文件，因此一般Web网站不使用该方法。</p></blockquote></li><li><p>HEAD 获得报文首部</p></li></ul><p>HEAD 方法和 GET 方法一样，只是不返回报文主体部分。用于确认 URI 的有效性及资源更新的日期时间等。</p><ul><li><p>DELETE 删除文件</p><blockquote><p>一般也不使用</p></blockquote></li><li><p>OPTIONS 询问支持的方法</p></li><li><p>TRACE 追踪路径</p><blockquote><p>易引发XST(跨站追踪)攻击，所以用不到。</p></blockquote></li><li><p>CONNECT 要求用隧道协议连接代理</p></li></ul><p>CONNECT 方法要求在与代理服务器通信时建立隧道，实现用隧道协议进行 TCP 通信。<br>主要使用 SSL(Secure Sockets Layer，安全套接 层)和 TLS(Transport Layer Security，传输层安全)协议把通信内容加密后经网络隧道传输。</p><p>格式:<code>CONNECT 代理服务器名:端口号 HTTP版本</code></p><h2 id="持久连接节省通信量"><a href="#持久连接节省通信量" class="headerlink" title="持久连接节省通信量"></a>持久连接节省通信量</h2><p>为了解决多次通信的开销问题，HTTP/1.1和一部分HTTP/1.0想出了持久连接(HTTP Persistent Connections，也称为HTTP keep-alive或HTTP connection reuse)的方法。</p><p>特点:只要任意一端没有明确提出断开连接，则保持TCP连接状态。</p><p>注:在HTTP/1.1中，所有连接默认是持久连接</p><p>附:管线化(pipelining)技术比持久连接还要快。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 图解HTTP </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 计算机网络 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>图解HTTP-了解Web及网络基础</title>
       <link href="/2020/05/25/%E5%9B%BE%E8%A7%A3HTTP-%E4%BA%86%E8%A7%A3Web%E5%8F%8A%E7%BD%91%E7%BB%9C%E5%9F%BA%E7%A1%80/"/>
       <url>/2020/05/25/%E5%9B%BE%E8%A7%A3HTTP-%E4%BA%86%E8%A7%A3Web%E5%8F%8A%E7%BD%91%E7%BB%9C%E5%9F%BA%E7%A1%80/</url>
