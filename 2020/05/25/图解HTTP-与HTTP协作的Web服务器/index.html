@@ -2,9 +2,9 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>设计模式-观察者模式 | Cynaith Blog</title>
-  <meta name="keywords" content=" 设计模式 , 观察者模式 ">
-  <meta name="description" content="设计模式-观察者模式 | Cynaith Blog">
+  <title>图解HTTP-与HTTP协作的Web服务器 | Cynaith Blog</title>
+  <meta name="keywords" content=" 计算机网络 ">
+  <meta name="description" content="图解HTTP-与HTTP协作的Web服务器 | Cynaith Blog">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="description" content="通信转发程序: 代理、网关、隧道 HTTP通信时，除客户端和服务器以外，还有一些用于通信数据转发的应用程序，例如代理、网关和隧道。他们可以配合服务器工作。   代理代理是一种有转发功能的应用程序，它扮演了位于服务器和客户 端“中间人”的角色，接收由客户端发送的请求并转发给服务器，同时也接收服务器返回的响应并转发给客户端。 代理服务器的基本行为就是接收客户端发送的请求后，转发给其他服务器。每次通过代">
 <meta property="og:type" content="article">
@@ -516,9 +516,9 @@
 </aside>
 <div class="post">
     <div class="pjax">
-        <article id="post-设计模式-观察者模式" class="article article-type-post" itemscope itemprop="blogPost">
+        <article id="post-图解HTTP-与HTTP协作的Web服务器" class="article article-type-post" itemscope itemprop="blogPost">
     
-        <h1 class="article-title">设计模式-观察者模式</h1>
+        <h1 class="article-title">图解HTTP-与HTTP协作的Web服务器</h1>
     
     <div class="article-meta">
         
@@ -526,28 +526,26 @@
         
         <span class="book">
             
-                <a  data-rel="设计模式">设计模式</a>
+                <a  data-rel="图解HTTP">图解HTTP</a>
             
         </span>
         
         
         <span class="tag">
             
-            <a class="color5">设计模式</a>
-            
-            <a class="color1">观察者模式</a>
+            <a class="color1">计算机网络</a>
             
         </span>
         
     </div>
     <div class="article-meta">
         
-        创建时间:<time class="date" title='更新时间: 2020-05-02 01:25:10'>2020-05-02 01:23</time>
+        创建时间:<time class="date" title='更新时间: 2020-05-25 18:01:21'>2020-05-25 18:01</time>
         
     </div>
     <div class="article-meta">
         
-        <span>字数:580</span>
+        <span>字数:716</span>
         
         
         <span id="busuanzi_container_page_pv">
@@ -577,7 +575,7 @@
     
     <div class="toc-ref">
     
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#观察者模式"><span class="toc-text">观察者模式</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#通信转发程序-代理、网关、隧道"><span class="toc-text">通信转发程序: 代理、网关、隧道</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#客户端的缓存"><span class="toc-text">客户端的缓存</span></a></li></ol>
     
 <style>
     .left-col .switch-btn,
@@ -593,11 +591,31 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="观察者模式"><a href="#观察者模式" class="headerlink" title="观察者模式"></a>观察者模式</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@USER</span>: lynn</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@DATE</span>: 2020/4/27</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> 观察者模式 </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        运营商 电信运营商 = <span class="keyword">new</span> 电信运营商();</span><br><span class="line">        电信运营商.增加用户(<span class="keyword">new</span> 苹果手机用户(<span class="number">138</span>));</span><br><span class="line">        电信运营商.增加用户(<span class="keyword">new</span> 苹果手机用户(<span class="number">136</span>));</span><br><span class="line">        电信运营商.增加用户(<span class="keyword">new</span> 安卓手机用户(<span class="number">158</span>));</span><br><span class="line">        电信运营商.发送短信(<span class="string">"开会"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">interface</span> 电信用户</span>&#123; <span class="comment">//Observe</span></span><br><span class="line">    <span class="keyword">void</span> 接受短信(String message);</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> 苹果手机用户 <span class="keyword">implements</span> 电信用户</span>&#123;</span><br><span class="line">    <span class="keyword">int</span> phone;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> 苹果手机用户(<span class="keyword">int</span> phone) &#123;</span><br><span class="line">        <span class="keyword">this</span>.phone = phone;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> 接受短信(String message) &#123;</span><br><span class="line">        System.out.println(<span class="string">"iPhone:"</span>+phone+<span class="string">";电信短信:"</span>+message);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">class</span> 安卓手机用户 <span class="keyword">implements</span> 电信用户</span>&#123;</span><br><span class="line">    <span class="keyword">int</span> phone;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> 安卓手机用户(<span class="keyword">int</span> phone) &#123;</span><br><span class="line">        <span class="keyword">this</span>.phone = phone;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> 接受短信(String message) &#123;</span><br><span class="line">        System.out.println(<span class="string">"Android:"</span>+phone+<span class="string">";移动短信:"</span>+message);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">interface</span> 运营商</span>&#123;</span><br><span class="line">    <span class="keyword">void</span> 增加用户(电信用户 user);</span><br><span class="line">    <span class="keyword">void</span> 发送短信(String message);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> 电信运营商 <span class="keyword">implements</span> 运营商</span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> List&lt;电信用户&gt; 用户们 = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> 增加用户(电信用户 user) &#123;</span><br><span class="line">        用户们.add(user);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> 发送短信(String message) &#123;</span><br><span class="line">        用户们.forEach(电信用户 -&gt; &#123;</span><br><span class="line">            电信用户.接受短信(message);</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<blockquote>
-<p>与策略模式一样，如果接口仅有一个方法，可以不需要实现具体观察者对象，如苹果手机用户、安卓手机用户</p>
+        <h2 id="通信转发程序-代理、网关、隧道"><a href="#通信转发程序-代理、网关、隧道" class="headerlink" title="通信转发程序: 代理、网关、隧道"></a>通信转发程序: 代理、网关、隧道</h2><blockquote>
+<p>HTTP通信时，除客户端和服务器以外，还有一些用于通信数据转发的应用程序，例如代理、网关和隧道。他们可以配合服务器工作。</p>
 </blockquote>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@USER</span>: lynn</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@DATE</span>: 2020/4/27</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> 观察者模式 </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        运营商 电信运营商 = <span class="keyword">new</span> 电信运营商();</span><br><span class="line">        电信运营商.增加用户((String message)-&gt;&#123;</span><br><span class="line">            System.out.println(<span class="string">"安卓电信短信:"</span>+message);</span><br><span class="line">        &#125;);</span><br><span class="line">        电信运营商.增加用户((String message)-&gt;&#123;</span><br><span class="line">            System.out.println(<span class="string">"苹果电信短信:"</span>+message);</span><br><span class="line">        &#125;);</span><br><span class="line">        电信运营商.发送短信(<span class="string">"开会"</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">@FunctionalInterface</span></span><br><span class="line"><span class="class"><span class="keyword">interface</span> 电信用户</span>&#123; <span class="comment">//Observe</span></span><br><span class="line">    <span class="keyword">void</span> 接受短信(String message);</span><br><span class="line">&#125;</span><br><span class="line"><span class="class"><span class="keyword">interface</span> 运营商</span>&#123;</span><br><span class="line">    <span class="keyword">void</span> 增加用户(电信用户 user);</span><br><span class="line">    <span class="keyword">void</span> 发送短信(String message);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> 电信运营商 <span class="keyword">implements</span> 运营商</span>&#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> List&lt;电信用户&gt; 用户们 = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> 增加用户(电信用户 user) &#123;</span><br><span class="line">        用户们.add(user);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> 发送短信(String message) &#123;</span><br><span class="line">        用户们.forEach(电信用户 -&gt; &#123;</span><br><span class="line">            电信用户.接受短信(message);</span><br><span class="line">        &#125;);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>代理<br>代理是一种有转发功能的应用程序，它扮演了位于服务器和客户 端“中间人”的角色，<br>接收由客户端发送的请求并转发给服务器，同时也接收服务器返回的响应并转发给客户端。</p>
+<p>代理服务器的基本行为就是接收客户端发送的请求后，转发给其他服务器。<br>每次通过代理服务器转发请求时，会追加写入Via首部信息。例如请求经过proxy1、proxy2:<code>Via:proxy2,proxy1</code>。</p>
+<ul>
+<li><p><strong>使用理由</strong> :利用缓存技术减少网络带宽的流量、组织内部针对特定网络的访问控制、获取访问日志。</p>
+</li>
+<li><p><strong>使用方法</strong> :一种是是否使用缓存，另一种是是否会修改报文。</p>
+</li>
+<li><p><strong>缓存代理</strong> :代理转发响应时，缓存代理(Caching Proxy)会预先将资源的副本 (缓存)保存在代理服务器上。<br>当代理再次收到相同的资源请求时，就不用从源服务器那里获取资源(会向源服务器确认缓存资源的有效性)，而是将之前缓存的资源作为响应返回。</p>
+</li>
+<li><p><strong>透明代理</strong> :转发请求或响应时，不对报文做任何加工的代理类型被称为透明代理 (Transparent Proxy)。反之，对报文内容进行加工的代理被称为非透明代理。</p>
+</li>
+</ul>
+</li>
+<li><p>网关<br>网关可以由HTTP请求转化为其他协议通信。利用网关可以加密客户端与网关之间的通信线路。</p>
+<p>例如，网关可以连接数据库，使用SQL语句查询数据。另外在Web购物网站上进行信用卡结算时，网关可以和信用卡结算系统联动。</p>
+</li>
+<li><p>隧道<br>隧道可按要求建立起一条与其他服务器的通信线路，届时使用 SSL 等加密手段进行通信。隧道的目的是确保客户端能与服务器进行安全的通信。<br>请求保持原样中转给之后的服务器。隧道会在通信双方断开连接时结束。</p>
+</li>
+</ul>
+<h2 id="客户端的缓存"><a href="#客户端的缓存" class="headerlink" title="客户端的缓存"></a>客户端的缓存</h2><p>缓存不仅可以存在于缓存服务器内，还可以存在客户端浏览器中。以 Internet Explorer 程序为例，把客户端缓存称为临时网络文件 (Temporary Internet File)。</p>
+<p>和缓存服务器相同的一点是，当判定缓存过期后，会向源服务 器确认资源的有效性。若判断浏览器缓存失效，浏览器会再次请求新 资源。</p>
 
       
        <hr><span style="font-style: italic;color: gray;"> 转载请注明来源，欢迎对文章中的引用来源进行考证，欢迎指出任何有错误或不够清晰的表达。可以在下面评论区评论，也可以邮件至 yanglau0527@gmail.com </span>
@@ -611,12 +629,12 @@
 
 
 <div class="article_copyright">
-    <p><span class="copy-title">文章标题:</span>设计模式-观察者模式</p>
-    <p><span class="copy-title">文章字数:</span><span class="post-count">580</span></p>
+    <p><span class="copy-title">文章标题:</span>图解HTTP-与HTTP协作的Web服务器</p>
+    <p><span class="copy-title">文章字数:</span><span class="post-count">716</span></p>
     <p><span class="copy-title">本文作者:</span><a  title="Cynaith">Cynaith</a></p>
-    <p><span class="copy-title">发布时间:</span>2020-05-02, 01:23:15</p>
-    <p><span class="copy-title">最后更新:</span>2020-05-02, 01:25:10</p>
-    <span class="copy-title">原始链接:</span><a class="post-url" href="/2020/05/02/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/" title="设计模式-观察者模式">https://cynaith.github.io/2020/05/02/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F/</a>
+    <p><span class="copy-title">发布时间:</span>2020-05-25, 18:01:04</p>
+    <p><span class="copy-title">最后更新:</span>2020-05-25, 18:01:21</p>
+    <span class="copy-title">原始链接:</span><a class="post-url" href="/2020/05/25/%E5%9B%BE%E8%A7%A3HTTP-%E4%B8%8EHTTP%E5%8D%8F%E4%BD%9C%E7%9A%84Web%E6%9C%8D%E5%8A%A1%E5%99%A8/" title="图解HTTP-与HTTP协作的Web服务器">https://cynaith.github.io/2020/05/25/%E5%9B%BE%E8%A7%A3HTTP-%E4%B8%8EHTTP%E5%8D%8F%E4%BD%9C%E7%9A%84Web%E6%9C%8D%E5%8A%A1%E5%99%A8/</a>
     <p>
         <span class="copy-title">版权声明:</span><i class="fa fa-creative-commons"></i> <a rel="license noopener" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。
     </p>
