@@ -2,9 +2,9 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>设计模式-建造者模式 | Cynaith Blog</title>
-  <meta name="keywords" content=" 设计模式 , 建造者模式 ">
-  <meta name="description" content="设计模式-建造者模式 | Cynaith Blog">
+  <title>图解HTTP-4-返回结果的HTTP状态码 | Cynaith Blog</title>
+  <meta name="keywords" content=" 计算机网络 ">
+  <meta name="description" content="图解HTTP-4-返回结果的HTTP状态码 | Cynaith Blog">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="description" content="状态码告知从服务器端返回的请求结果常见的状态码  1xx 提示成功，表示目前是协议处理的中间状态  2xx 成功，报文已经收到并被正确处理  3xx 重定向，资源位置发生变动，需要客户端重新发送请求  4xx 客户端错误，请求报文有误，服务器无法处理  5xx 服务器错误，服务器在处理请求时内部发生了错误  2xx 成功  200 OK 204 No Content表示服务器接受的请求已经成功处理">
 <meta property="og:type" content="article">
@@ -508,9 +508,9 @@
 </aside>
 <div class="post">
     <div class="pjax">
-        <article id="post-设计模式-建造者模式" class="article article-type-post" itemscope itemprop="blogPost">
+        <article id="post-图解HTTP-返回结果的HTTP状态码" class="article article-type-post" itemscope itemprop="blogPost">
     
-        <h1 class="article-title">设计模式-建造者模式</h1>
+        <h1 class="article-title">图解HTTP-4-返回结果的HTTP状态码</h1>
     
     <div class="article-meta">
         
@@ -518,28 +518,26 @@
         
         <span class="book">
             
-                <a  data-rel="设计模式">设计模式</a>
+                <a  data-rel="图解HTTP">图解HTTP</a>
             
         </span>
         
         
         <span class="tag">
             
-            <a class="color5">设计模式</a>
-            
-            <a class="color1">建造者模式</a>
+            <a class="color1">计算机网络</a>
             
         </span>
         
     </div>
     <div class="article-meta">
         
-        创建时间:<time class="date" title='更新时间: 2020-05-02 01:25:45'>2020-05-02 01:22</time>
+        创建时间:<time class="date" title='更新时间: 2020-05-25 16:23:19'>2020-05-25 16:22</time>
         
     </div>
     <div class="article-meta">
         
-        <span>字数:318</span>
+        <span>字数:703</span>
         
         
         <span id="busuanzi_container_page_pv">
@@ -569,7 +567,7 @@
     
     <div class="toc-ref">
     
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#生成者模式-Build"><span class="toc-text">生成者模式 Build</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#状态码告知从服务器端返回的请求结果"><span class="toc-text">状态码告知从服务器端返回的请求结果</span></a></li></ol>
     
 <style>
     .left-col .switch-btn,
@@ -585,24 +583,60 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="生成者模式-Build"><a href="#生成者模式-Build" class="headerlink" title="生成者模式 Build"></a>生成者模式 Build</h2><blockquote>
-<p>将一个复杂对象的构建与它的表示分离，使得同样的构建过程可以创建不同的表示</p>
-</blockquote>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@USER</span>: lynn</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@DATE</span>: 2020/4/26</span></span><br><span class="line"><span class="comment"> **/</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Build</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        Car audi = <span class="keyword">new</span> Car.Builder()</span><br><span class="line">                .color(Color.BLACK)</span><br><span class="line">                .money(<span class="number">300000</span>)</span><br><span class="line">                .kind(<span class="string">"A4"</span>)</span><br><span class="line">                .year(<span class="number">2020</span>)</span><br><span class="line">                .build();</span><br><span class="line">        System.out.println(audi.getMoney());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Car</span></span>&#123;</span><br><span class="line">    String kind;</span><br><span class="line">    Color color;</span><br><span class="line">    <span class="keyword">int</span> year;</span><br><span class="line">    <span class="keyword">int</span> money;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="title">Car</span><span class="params">(Builder builder)</span> </span>&#123;</span><br><span class="line">        setKind(builder.kind);</span><br><span class="line">        setColor(builder.color);</span><br><span class="line">        setYear(builder.year);</span><br><span class="line">        setMoney(builder.money);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">getKind</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> kind;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setKind</span><span class="params">(String kind)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.kind = kind;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> Color <span class="title">getColor</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> color;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setColor</span><span class="params">(Color color)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.color = color;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getYear</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> year;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setYear</span><span class="params">(<span class="keyword">int</span> year)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.year = year;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getMoney</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> money;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setMoney</span><span class="params">(<span class="keyword">int</span> money)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">this</span>.money = money;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="class"><span class="keyword">class</span> <span class="title">Builder</span> </span>&#123;</span><br><span class="line">        <span class="keyword">private</span> String kind;</span><br><span class="line">        <span class="keyword">private</span> Color color;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">int</span> year;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">int</span> money;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> <span class="title">Builder</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> Builder <span class="title">kind</span><span class="params">(String val)</span> </span>&#123;</span><br><span class="line">            kind = val;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> Builder <span class="title">color</span><span class="params">(Color val)</span> </span>&#123;</span><br><span class="line">            color = val;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> Builder <span class="title">year</span><span class="params">(<span class="keyword">int</span> val)</span> </span>&#123;</span><br><span class="line">            year = val;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> Builder <span class="title">money</span><span class="params">(<span class="keyword">int</span> val)</span> </span>&#123;</span><br><span class="line">            money = val;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">this</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">public</span> Car <span class="title">build</span><span class="params">()</span> </span>&#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="keyword">new</span> Car(<span class="keyword">this</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
+        <h2 id="状态码告知从服务器端返回的请求结果"><a href="#状态码告知从服务器端返回的请求结果" class="headerlink" title="状态码告知从服务器端返回的请求结果"></a>状态码告知从服务器端返回的请求结果</h2><p>常见的状态码</p>
 <ul>
-<li>应用场景 <ul>
-<li>Android中，对话框的创建</li>
-<li>OkHttp</li>
+<li><p>1xx 提示成功，表示目前是协议处理的中间状态</p>
+</li>
+<li><p>2xx 成功，报文已经收到并被正确处理</p>
+</li>
+<li><p>3xx 重定向，资源位置发生变动，需要客户端重新发送请求</p>
+</li>
+<li><p>4xx 客户端错误，请求报文有误，服务器无法处理</p>
+</li>
+<li><p>5xx 服务器错误，服务器在处理请求时内部发生了错误</p>
+</li>
+<li><p>2xx 成功</p>
+<ul>
+<li>200 OK</li>
+<li>204 No Content<br>表示服务器接受的请求已经成功处理，但是响应报文中不含实体的主体部分。</li>
+<li>206 Partial Content<br>表示客户端进行了范围请求，并且服务器成功执行了GET请求。<br>响应报文中包含由Content-Range指定范围的实体内容。</li>
 </ul>
 </li>
-<li>优点<ul>
-<li>避免过多setter方法，并且隐藏内部细节</li>
-<li>链式调用，简洁易懂。</li>
+<li><p>3xx 重定向</p>
+<ul>
+<li><p>301 Moved Permanently 永久性重定向<br>表示请求的资源已被分配给了新的URI，</p>
+</li>
+<li><p>302 Found 临时性重定向<br>状态码表示请求的资源已被分配了新的URI，希望用户能使用新的URI访问。</p>
+</li>
+<li><p>303 See Other<br>表示请求对应的资源存在着另一个URI，应使用<strong>GET</strong>方法定向获取请求的资源</p>
+</li>
+<li><p>304 Not Modified<br>表示客户端发送附带条件的请求时，服务器端允许请求访问资源，但未满足条件的情况。304返回时不包含任何响应的主体部分。  </p>
+<blockquote>
+<p>什么是附带条件？</p>
+<p>附带条件的请求是指采用 GET 方法的请求报文中包含 If-Match，If-Modified- Since，If-None-Match，If-Range，If-Unmodified-Since 中任一首部。</p>
+</blockquote>
+</li>
+<li><p>307 Temporary Redirect 临时重定向<br>和302有着相同的含义，但是 307禁止POST变换成GET</p>
+</li>
 </ul>
 </li>
-<li>缺点<ul>
-<li>内部类与外部类相互引用，可能会导致内存消耗比较大</li>
+<li><p>4xx 客户端错误</p>
+<ul>
+<li><p>400 Bad Request<br>请求报文中存在语法错误</p>
+</li>
+<li><p>401 Unauthorized<br>表示发送的请求需要有通过HTTP认证的认证信息。若之前进行过请求，则表示用户认证失败。</p>
+<p>返回含有 401 的响应必须包含一个适用于被请求资源的 <code>WWW- Authenticate</code> 首部用以质询(challenge)用户信息。当浏览器初次接收 到 401 响应，会弹出认证用的对话窗口。</p>
+</li>
+<li><p>403 Forbidden<br>表示访问被服务器拒绝，服务端可以在实体的主体部分对原因进行描述。</p>
+</li>
+<li><p>404 Not Found</p>
+</li>
+</ul>
+</li>
+<li><p>5xx 服务器错误</p>
+<ul>
+<li>500 Internal Server Error<br>表明服务器端在执行请求时发生了错误。也有可能是 Web 应用存在的 bug 或某些临时的故障。</li>
+<li>503 Service Unavailable<br>该状态码表明服务器暂时处于超负载或正在进行停机维护，现在无法处理请求。如果事先得知解除以上状况需要的时间，最好写入 RetryAfter 首部字段再返回给客户端。</li>
 </ul>
 </li>
 </ul>
@@ -619,12 +653,12 @@
 
 
 <div class="article_copyright">
-    <p><span class="copy-title">文章标题:</span>设计模式-建造者模式</p>
-    <p><span class="copy-title">文章字数:</span><span class="post-count">318</span></p>
+    <p><span class="copy-title">文章标题:</span>图解HTTP-4-返回结果的HTTP状态码</p>
+    <p><span class="copy-title">文章字数:</span><span class="post-count">703</span></p>
     <p><span class="copy-title">本文作者:</span><a  title="Cynaith">Cynaith</a></p>
-    <p><span class="copy-title">发布时间:</span>2020-05-02, 01:22:36</p>
-    <p><span class="copy-title">最后更新:</span>2020-05-02, 01:25:45</p>
-    <span class="copy-title">原始链接:</span><a class="post-url" href="/2020/05/02/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%BB%BA%E9%80%A0%E8%80%85%E6%A8%A1%E5%BC%8F/" title="设计模式-建造者模式">https://cynaith.github.io/2020/05/02/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E5%BB%BA%E9%80%A0%E8%80%85%E6%A8%A1%E5%BC%8F/</a>
+    <p><span class="copy-title">发布时间:</span>2020-05-25, 16:22:30</p>
+    <p><span class="copy-title">最后更新:</span>2020-05-25, 16:23:19</p>
+    <span class="copy-title">原始链接:</span><a class="post-url" href="/2020/05/25/%E5%9B%BE%E8%A7%A3HTTP-%E8%BF%94%E5%9B%9E%E7%BB%93%E6%9E%9C%E7%9A%84HTTP%E7%8A%B6%E6%80%81%E7%A0%81/" title="图解HTTP-4-返回结果的HTTP状态码">https://cynaith.github.io/2020/05/25/%E5%9B%BE%E8%A7%A3HTTP-%E8%BF%94%E5%9B%9E%E7%BB%93%E6%9E%9C%E7%9A%84HTTP%E7%8A%B6%E6%80%81%E7%A0%81/</a>
     <p>
         <span class="copy-title">版权声明:</span><i class="fa fa-creative-commons"></i> <a rel="license noopener" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。
     </p>
