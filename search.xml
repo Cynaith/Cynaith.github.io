@@ -4,6 +4,181 @@
   
     
     <entry>
+      <title>MySQL性能调优-7.MySQL数据库锁定机制</title>
+      <link href="/2020/06/06/MySQL%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98-7-MySQL%E6%95%B0%E6%8D%AE%E5%BA%93%E9%94%81%E5%AE%9A%E6%9C%BA%E5%88%B6/"/>
+      <url>/2020/06/06/MySQL%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98-7-MySQL%E6%95%B0%E6%8D%AE%E5%BA%93%E9%94%81%E5%AE%9A%E6%9C%BA%E5%88%B6/</url>
+      
+        <content type="html"><![CDATA[<h2 id="MySQL数据库锁定机制"><a href="#MySQL数据库锁定机制" class="headerlink" title="MySQL数据库锁定机制"></a>MySQL数据库锁定机制</h2><h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>数据库锁定机制简单来说就是数据库为了保证数据的一致性而使各种共享资源在被并发访问访问变得有序所设计的一种规则。</p><ul><li><p>行级锁定</p><ul><li>特点: 所定对象颗粒度小，能够给予应用程序尽可能大的并发处理能力。</li><li>弊端: 容易发生死锁</li></ul></li><li><p>表级锁定</p><ul><li>特点: 实现逻辑简单，带来的系统负面影响最小，获取锁和释放锁的速度很快。可以避免死锁问题。</li><li>弊端: 出现锁定资源争用的概率最高。</li></ul></li><li><p>页级锁定</p><ul><li>特点: 锁定颗粒度介于行与表之间，处理能力介于两者之间。</li><li>弊端: 会发生死锁。<h3 id="各种锁定机制分析"><a href="#各种锁定机制分析" class="headerlink" title="各种锁定机制分析"></a>各种锁定机制分析</h3><h4 id="表级锁定"><a href="#表级锁定" class="headerlink" title="表级锁定"></a>表级锁定</h4></li></ul></li><li><p>读锁定</p><p>一个新的客户端请求在申请获取读锁定资源的时候，需要满足两个条件:</p><ol><li>请求锁定的资源当前没有被写锁定</li><li>写锁定等待队列(Pending write-lock queue)中没有更高优先级的写锁定等待</li></ol><p>如果满足了上面两个条件之后，该请求会被立即通过，并将相关的信息存入 Current read-lock queue 中，<br>而如果上面两个条件中任何一个没有满足，都会被迫进入等待队列Pending read-lock queue 中等待资源的释放。</p></li><li><p>写锁定</p><ol><li>当客户端请求写锁定的时候，MySQL 首先检查在 Current write-lock queue 是否已经有锁定相同资源的信息存在。</li><li>如果 Current write-lock queue 没有，则再检查 Pending write-lock queue。</li><li>如果在 Pending write-lock queue 中找到了，自己也需要进入等待队列并暂停自身线程等待锁定资源。</li><li>如果Pending write-lock queue 为空，则再检测 Current read-lock queue，如果有锁定存在，则同样需要 进入 Pending write-lock queue 等待。</li></ol><p>特殊情况:(当遇到这两种特殊情况的时候，写锁定会立即获得而进入Current write-lock queue 中)   </p><ol><li>请求锁定的类型为 WRITE_DELAYED;</li><li>请求锁定的类型为 WRITE_CONCURRENT_INSERT 或者是 TL_WRITE_ALLOW_WRITE ，同时 Current read lock 是 READ_NO_INSERT 的锁定类型。</li></ol></li></ul><h3 id="合理利用锁机制优化-MySQL"><a href="#合理利用锁机制优化-MySQL" class="headerlink" title="合理利用锁机制优化 MySQL"></a>合理利用锁机制优化 MySQL</h3><ul><li><p>缩短锁定时间(让Query执行时间尽可能短)<br>a) 尽量减少大的复杂 Query，将复杂 Query 分拆成几个小的 Query 分布进行<br>b) 尽可能的建立足够高效的索引，让数据检索更迅速<br>c) 尽量让 MyISAM 存储引擎的表只存放必要的信息，控制字段类型<br>d) 利用合适的机会优化 MyISAM 表数据文件  </p></li><li><p>分离能并行的操作<br>虽然MyISAM的表锁是读写互相堵塞的，但是MyISAM还有一个特性，那就是Concurrent Insert(并发插入)的特性。<br>MyISAM存储引擎有一个控制是否打开Concurrent Insert功能的参数选项:concurrent_insert，可以设置为 0，1 或者 2。三个值的具体说明如下:<br>a) concurrent_insert=2，无论 MyISAM 存储引擎的表数据文件的中间部分是否存在因为删除数据 而留下的空闲空间，都允许在数据文件尾部进行Concurrent Insert;<br>b) concurrent_insert=1，当 MyISAM 存储引擎表数据文件中间不存在空闲空间的时候，可以从文 件尾部进行Concurrent Insert;<br>c) concurrent_insert=0，无论 MyISAM 存储引擎的表数据文件的中间部分是否存在因为删除数据 而留下的空闲空间，都不允许Concurrent Insert。  </p></li><li><p>合理利用读写优先级<br>默认情况下是写优先级要大于读优先级。所以，如果我们可以根据各自系统环境的差异决定读与写的优先级。<br><strong>例如:</strong> </p><ol><li>如果我们的系统是一个以读为主，而且要优先保证查询性能的话，我们可以通过设置系统参数选项 low_priority_updates=1，将写的优先级设置为比读的优先级低，即可让告诉 MySQL 尽量先处理读请求。</li><li>这里我们完全可以利用这个特性，将concurrent_insert参数设置为1，甚至如果数据被删除的可能 性很小的时候，如果对暂时性的浪费少量空间并不是特别的在乎的话，<br>将 concurrent_insert 参数设置 为 2 都可以尝试。当然，数据文件中间留有空域空间，在浪费空间的时候，还会造成在查询的时候需要读取更多的数据，所以如果删除量不是很小的话，<br>还是建议将concurrent_insert 设置为 1 更为合适。</li></ol></li><li><p>Innodb 行锁优化建议<br>Innodb 存储引擎由于实现了行级锁定，虽然在锁定机制的实现方面所带来的性能损耗可能比表级锁定会要更高一些，但是在整体并发处理能力方面要远远优于MyISAM 的表级锁定的。<br>当系统并发量较高的 时候，Innodb 的整体性能和 MyISAM 相比就会有比较明显的优势了。但是，Innodb 的行级锁定同样也有其 脆弱的一面，当我们使用不当的时候，<br>可能会让Innodb 的整体性能表现不仅不能比MyISAM 高，甚至可能会更差。</p><ol><li>尽可能让所有的数据检索都通过索引来完成，从而避免 Innodb 因为无法通过索引键加锁而升级为表级锁定;</li><li>合理设计索引，让 Innodb 在索引键上面加锁的时候尽可能准确，尽可能的缩小锁定范围，避免造成不必要的锁定而影响其他 Query 的执行;</li><li>尽可能减少基于范围的数据检索过滤条件，避免因为间隙锁带来的负面影响而锁定了不该锁定的记录;</li><li>尽量控制事务的大小，减少锁定的资源量和锁定时间长度</li><li>在业务环境允许的情况下，尽量使用较低级别的事务隔离，以减少 MySQL 因为实现事务隔离级别所带来的附加成本;</li></ol></li><li><p>Innodb减少死锁的建议</p><ol><li>类似业务模块中，尽可能按照相同的访问顺序来访问，防止产生死锁;</li><li>在同一个事务中，尽可能做到一次锁定所需要的所有资源，减少死锁产生概率;</li><li>对于非常容易产生死锁的业务部分，可以尝试使用升级锁定颗粒度，通过表级锁定来减少死锁产生的概率;</li></ol></li></ul>]]></content>
+      
+      
+      <categories>
+          
+          <category> MySQL性能调优 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> MySQL </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>MySQL性能调优-6.影响MySQL性能的相关因素</title>
+      <link href="/2020/06/06/MySQL%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98-6-%E5%BD%B1%E5%93%8DMySQL%E6%80%A7%E8%83%BD%E7%9A%84%E7%9B%B8%E5%85%B3%E5%9B%A0%E7%B4%A0/"/>
+      <url>/2020/06/06/MySQL%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98-6-%E5%BD%B1%E5%93%8DMySQL%E6%80%A7%E8%83%BD%E7%9A%84%E7%9B%B8%E5%85%B3%E5%9B%A0%E7%B4%A0/</url>
+      
+        <content type="html"><![CDATA[<h2 id="影响MySQL-Server性能相关因素"><a href="#影响MySQL-Server性能相关因素" class="headerlink" title="影响MySQL Server性能相关因素"></a>影响MySQL Server性能相关因素</h2><h3 id="商业需求对性能的影响"><a href="#商业需求对性能的影响" class="headerlink" title="商业需求对性能的影响"></a>商业需求对性能的影响</h3><ol><li>每次产品经理们提出新的项目(或者功能需求)的时候，应该要求他们同时给出该项目的预期收益的量化指标，以备项目上先后统计评估投入产出比率;</li><li>在每次项目进行过程中，应该详细记录所有的资源投入，包括人力投入，硬件设施的投入， 以及其他任何项目相关的资源投入;</li><li>项目(或者功能需求)上线之后应该及时通过手机相关数据统计出项目的实际收益值，以便计算投入产出比率的时候使用;</li><li>技术部门应该尽可能推动设计出一个项目(或者功能需求)的投入产出比率的计算规则。在项目上线一段时间之后，通过项目实际收益的统计数据和项目的投入资源量，<br>计算出整个项目的实际投入产出值，并公布给所有参与项目的部门知晓，同时存放以备后查。</li></ol><h3 id="系统架构及实现对性能的影响"><a href="#系统架构及实现对性能的影响" class="headerlink" title="系统架构及实现对性能的影响"></a>系统架构及实现对性能的影响</h3><ul><li><p>不适合存放在数据库中的数据:</p><ol><li>二进制多媒体数据</li><li>流水队列数据</li><li>超大文本数据</li></ol></li><li><p>是否合理的运用了应用层Cache机制<br>对于 Web 应用，活跃数据的数据量总是不会特别的大，有些活跃数据更是很少变化。</p></li><li><p>我们的数据层实现都是最精简的吗?<br><strong>例如: 现在要实现每个用户查看各自相册列表(假设每个列表显示10 张相片) 的时候，能够在相片名称后面显示该相片的留言数量。</strong><br>方案一:<br>1、通过“SELECT id,subject,url FROM photo WHERE user_id = ? limit 10” 得到第一页的相片相关信息;<br>2 、通过第 1 步结果集中的 10 个相片 id 循环运行十次 “ SELECT COUNT(*) FROM photo_comment WHERE photh_id = ?” 来得到每张相册的回复数量然后再瓶装展现对象。</p><p>方案二:<br>1、和上面完全一样的操作步骤;<br>2、通过程序拼装上面得到的 10 个 photo 的 id，再通过 in 查询“SELECT photo_id,count(*) FROM<br>photo_comment WHERE photo_id in (?) GROUP BY photo_id” 一次得到 10 个 photo 的所有回复数量， 再组装两个结果集得到展现对象。</p></li></ul><p>  比较如下:<br>  1、从 MySQL 执行的 SQL 数量来看 ，第一种解决方案为 11(1+10=11)条 SQL 语句，第二种解决方案 为 2 条 SQL 语句(1+1);<br>  2、从应用程序与数据库交互来看，第一种为11 次，第二种为 2 次;<br>  3、从数据库的 IO 操作来看，简单假设每次 SQL 为 1 个 IO，第一种最少 11 次 IO，第二种小于等于 11 次 IO，而且只有当数据非常之离散的情况下才会需要11 次;<br>  4、从数据库处理的查询复杂度来看，第一种为两类很简单的查询，第二种有一条 SQL 语句有 GROUP BY 操作，比第一种解决方案增加了了排序分组操作;<br>  5、从应用程序结果集处理来看，第一种11 次结果集的处理，第二中2 次结果集的处理，但是第二种 解决方案中第二词结果处理数量是第一次的10 倍;<br>  6、从应用程序数据处理来看，第二种比第一种多了一个拼装photo_id 的过程。 </p><p>  分析如下:<br>  1、由于 MySQL 对客户端每次提交的 SQL 不管是相同还是不同，都需要进行完全解析，这个动作主要 消耗的资源是数据库主机的 CPU，<br>  那么这里第一种方案和第二种方案消耗CPU 的比例是 11:2。SQL 语句的解析动作在整个 SQL 语句执行过程中的整体消耗的 CPU 比例是较多的;<br>  2、应用程序与数据库交互所消耗的资源基本上都在网络方面，同样也是11:2;<br>  3、数据库 IO 操作资源消耗为小于或者等于 1:1;<br>  4、第二种解决方案需要比第一种多消耗内存资源进行排序分组操作，由于数据量不大，多出的消耗在语句整体消耗中占用比例会比较小，大概不会超过20%，<br>  大家可以针对性测试;<br>  5、结果集处理次数也为 11:2，但是第二中解决方案第二次处理数量较大，整体来说两次的性能消耗区别不大;<br>  6、应用程序数据处理方面所多出的这个 photo_id 的拼装所消耗的资源是非常小的，甚至比应用程序与 MySQL 做一次简单的交互所消耗的资源还要少。  </p><p>  结论:<br>  1、提交的SQL会占用数据库主机CPU<br>  2、应用程序与数据库交互会占用网络<br>  3、SQL会占用IO<br>  4、字段拼装的消耗非常小</p><p>SQL并非越精简越好  </p><ol><li>不应该对表有不必要的访问</li><li>不应重复执行相同的SQL</li></ol><ul><li>数据库因架构设计而引起性能问题和资源浪费问题</li></ul><ol><li>Cache 系统的不合理利用导致 Cache 命中率低下造成数据库访问量的增加，同时也浪费了 Cache 系统的硬件资源投入;</li><li>过度依赖面向对象思想</li><li>对可扩展性的过渡追求，促使系统设计的时候将对象拆得过于离散，造成系统中大量的复杂Join 语句，而 MySQL Server 在各数据库系统中的主要优势在于处理简单逻辑的查询，这与其锁定的机制也有 较大关系;</li><li>对数据库的过渡依赖，将大量更适合存放于文件系统中的数据存入了数据库中，造成数据库资源 的浪费，影响到系统的整体性能，如各种日志信息;</li><li>过度理想化系统的用户体验，使大量非核心业务消耗过多的资源，如大量不需要实时更新的数据 做了实时统计计算。</li></ol><h3 id="Query语句对系统性能的影响"><a href="#Query语句对系统性能的影响" class="headerlink" title="Query语句对系统性能的影响"></a>Query语句对系统性能的影响</h3><ul><li>当MySQL Server的连接线程接收到Client端发送过来的SQL请求后，会经过一系列的分解Parse，进行相应的分析。</li><li>MySQL会通过查询优化器模块根据该 SQL 所设涉及到的数据表的相关统计信息进行计算分析，得出一个 MySQL认为最合理最优化的数据访问方式(执行计划)。</li><li>再根据所得到的执行计划通过调用存储引擎接口来获取相应数据，再将存储引擎返回的数据进行相关处理。</li><li>最后以 Client 端所要求的格式作为结果集返回给 Client 端的应用程序。</li></ul><p>在数据库管理软件中，最大的性能瓶颈就是磁盘IO，当我们需要从数据库中查询某个数据的时候，<br>所消耗资源的多少主要就取决于数据库以一个什么样的数据读取方式来完成我们的查询请求，也就是取决于SQL语句的执行计划。</p><h3 id="Schema设计对系统性能的影响"><a href="#Schema设计对系统性能的影响" class="headerlink" title="Schema设计对系统性能的影响"></a>Schema设计对系统性能的影响</h3><ul><li>根据需求制定表<ul><li>如: 讨论区系统需要经常访问帖子标题列表，而需要帖子和作者名应尽量放在同一表中，并且content帖子内容应单独建表。</li></ul></li></ul>]]></content>
+      
+      
+      <categories>
+          
+          <category> MySQL性能调优 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> MySQL </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>MySQL性能调优-5.MySQL备份与恢复</title>
+      <link href="/2020/06/06/MySQL%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98-5-MySQL%E5%A4%87%E4%BB%BD%E4%B8%8E%E6%81%A2%E5%A4%8D/"/>
+      <url>/2020/06/06/MySQL%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98-5-MySQL%E5%A4%87%E4%BB%BD%E4%B8%8E%E6%81%A2%E5%A4%8D/</url>
+      
+        <content type="html"><![CDATA[<h2 id="MySQL备份与恢复"><a href="#MySQL备份与恢复" class="headerlink" title="MySQL备份与恢复"></a>MySQL备份与恢复</h2><h3 id="逻辑备份"><a href="#逻辑备份" class="headerlink" title="逻辑备份"></a>逻辑备份</h3><p>逻辑备份可以说是最简单， 也是目前中小型系统最常使用的备份方式。 在MySQL 中我们 常用的逻辑备份主要就是两种，一种是将数据生成可以完全重现当前数据库中数据的<br>INSERT 语句，另外一种就是将数据通过逻辑备份软件，将我们数据库表数据以特定分隔符 进行分隔后记录在文本文件中。</p><h3 id="物理备份"><a href="#物理备份" class="headerlink" title="物理备份"></a>物理备份</h3><p>MyISAM 存储引擎的所有数据都存放在 MySQL 配置中所设定的“datadir”目录下。实际<br>上不管我们使用的是 MyISAM 存储引擎还是其他任何存储引擎，每一个数据库都会在 “datadir”目录下有一个文件夹(包括系统信息的数据库mysql 也是一样) 。在各个数据库 中每一个 MyISAM 存储引擎表都会有三个文件存在，分别为记录表结构元数据的“.frm”文 件，存储表数据的“.MYD”文件，以及存储索引数据的“.MYI”文件。由于 MyISAM 属于非 事务性存储引擎，所以他没有自己的日志文件。所以MyISAM 存储引擎的物理备份，除了备<br>份 MySQL 系统的共有物理文件之外，就只需要备份上面的三种文件即可。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> MySQL性能调优 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> MySQL </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>MySQL性能调优-4.MySQL安全管理</title>
+      <link href="/2020/06/06/MySQL%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98-4-MySQL%E5%AE%89%E5%85%A8%E7%AE%A1%E7%90%86/"/>
+      <url>/2020/06/06/MySQL%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98-4-MySQL%E5%AE%89%E5%85%A8%E7%AE%A1%E7%90%86/</url>
+      
+        <content type="html"><![CDATA[<h2 id="MySQL安全管理"><a href="#MySQL安全管理" class="headerlink" title="MySQL安全管理"></a>MySQL安全管理</h2><h3 id="数据库系统安全相关因素"><a href="#数据库系统安全相关因素" class="headerlink" title="数据库系统安全相关因素"></a>数据库系统安全相关因素</h3><ul><li>外围网络</li><li>主机</li><li>数据库</li><li>代码</li></ul><h3 id="MySQL权限系统介绍"><a href="#MySQL权限系统介绍" class="headerlink" title="MySQL权限系统介绍"></a>MySQL权限系统介绍</h3><p>关权限信息主要存储在几个被称为 grant tables 的系统表中，即: mysql.User，mysql.db，mysql.Host，mysql.table_priv 和 mysql.column_priv。由于权限信息数据量比较小，而且访问又非常频繁，所以Mysql 在启 动的时候，就会将所有的权限信息都Load 到内存中保存在几个特定的结构中。<br>所以才有我 们每次手工修改了权限相关的表之后， 都需要执“行FLUSH PRIVILEGES”命令重新加载 MySQL 的权限信息。</p><ul><li>权限级别<ul><li>Global Level(全局权限控制)</li><li>Database Level(作用域为所指定整个数据库中的所有对象)</li><li>Table Level(作用范围是授权语句中所指定数据库的指定表)</li><li>Column Level(作用范围为某个表的某个列)</li><li>Routine Level(权限主要只有EXECUTE、ALTER ROUTINE两种)</li></ul></li></ul>]]></content>
+      
+      
+      <categories>
+          
+          <category> MySQL性能调优 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> MySQL </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>MySQL性能调优-3.MySQL存储引擎简介</title>
+      <link href="/2020/06/06/MySQL%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98-3-MySQL%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E7%AE%80%E4%BB%8B/"/>
+      <url>/2020/06/06/MySQL%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98-3-MySQL%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E7%AE%80%E4%BB%8B/</url>
+      
+        <content type="html"><![CDATA[<h2 id="MySQL存储引擎简介"><a href="#MySQL存储引擎简介" class="headerlink" title="MySQL存储引擎简介"></a>MySQL存储引擎简介</h2><p>MyISAM是MySQL默认的存储引擎。从5.1开始，引入新概念：插件式存储引擎体系结构(MyISAM、Innodb、NDB Cluster、Maria、Falcon等)。</p><h3 id="MyISAM存储引擎"><a href="#MyISAM存储引擎" class="headerlink" title="MyISAM存储引擎"></a>MyISAM存储引擎</h3><p>MyISAM支持以下三种类型的索引:</p><ol><li>B-Tree (balance tree)</li><li>R-Tree (用于存储空间和多维数据的字段索引)</li><li>Full-text (全文索引 b-tree)</li></ol><h3 id="Innodb存储引擎"><a href="#Innodb存储引擎" class="headerlink" title="Innodb存储引擎"></a>Innodb存储引擎</h3><p>特点:</p><ol><li>支持事务安装<br> 未提交读 Read uncommitted<br> 已提交读 Read committed<br> 可重复读 Repeatable read<br> 可串行化 Serializable</li><li>数据多版本读取<br>通过实现undo日志来实现数据的多版本读取。</li><li>锁定机制的改进<br>改变了MyISAM的锁机制，实现了行锁。</li><li>实现外键</li></ol>]]></content>
+      
+      
+      <categories>
+          
+          <category> MySQL性能调优 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> MySQL </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>MySQL性能调优-2.MySQL架构组成</title>
+      <link href="/2020/06/06/MySQL%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98-2-MySQL%E6%9E%B6%E6%9E%84%E7%BB%84%E6%88%90/"/>
+      <url>/2020/06/06/MySQL%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98-2-MySQL%E6%9E%B6%E6%9E%84%E7%BB%84%E6%88%90/</url>
+      
+        <content type="html"><![CDATA[<h2 id="MySQL架构组成"><a href="#MySQL架构组成" class="headerlink" title="MySQL架构组成"></a>MySQL架构组成</h2><h3 id="MySQL物理文件组成"><a href="#MySQL物理文件组成" class="headerlink" title="MySQL物理文件组成"></a>MySQL物理文件组成</h3><ul><li><p>日志文件</p><ul><li><p>错误日志:Error Log</p></li><li><p>二进制日志: Binary Log &amp; Binary Log Index<br>二进制日志，就是常说的binlog，当我们通过“–log-bin[=file_name]”打开了记录的功能之后，<br>MySQL 会将所有修改数据库数据的 query 以二进制形式记录到日志文件中。 当然，日志中并不仅限于query 语句这么简单，<br>还包括每一条query所执行的时间，所消耗的资源， 以及相关的事务信息，所以 binlog 是事务安全的。</p></li><li><p>更新日志: update Log<br>功能与binlog类似，只不过不是二进制格式，是以简单文本格式记录内容。</p></li><li><p>查询日志: query Log<br>记录MySQL中所有的query，开启后对性能有较大影响。</p></li><li><p>慢查询日志: slow query log<br>记录执行时间较长的query，简单文本格式。</p></li><li><p>Innodb的在线redo日志: innodb redo log<br>是一个事务安全的存储引擎。</p></li></ul></li><li><p>数据文件<br>多数存储引擎的数据文件都存放在和MyISAM 数据文件位置相同的目录下，但是每个数据文件的扩展名却各不一样。<br>如MyISAM 用“.MYD”作为扩展 名，Innodb 用“.ibd”，Archive 用“.arc”，CSV 用“.csv”，等等。</p><ul><li>.frm文件<br>存储与表相关的元数据信息。包括表结构的定义信息。</li><li>.MYD文件<br>专属于MyISAM存储引擎，存放MyISAM表的数据。</li><li>.MYI文件<br>专属于MyISAM存储引擎，主要存放MyISAM表的索引信息。</li><li>.ibd文件和ibdata文件<br>存放Innodb数据的文件，独享表空间的存储方式使用.ibd文件存放数据，共享表空间存放数据，则会使用ibdata文件存放。</li></ul></li><li><p>Replication相关文件</p><ul><li>master.info<br>存放在Slave端的数据目录下，存放该Slave的Master端的相关信息，包括Master的主机地址、连接用户、端口、当前日志位置、已经读取到的日志位置等信息。</li><li>relay log 和 relay log index</li><li>relay-log.info<br>类似于master.info，存放通过Slave的I/O线程写入到本地的relay log的相关信息。供Slave端的SQL线程以及某些管理操作随时能够获取当前复制的相关信息。</li></ul></li><li><p>其他文件</p><ul><li>system config file<br>MySQL的系统配置文件为my.cnf</li><li>pid file<br>是mysqld应用程序在Unix/Linux环境下的一个进程文件，存放着自己的进程id。</li><li>socket file<br>socket文件也是在Unix/Linux环境下才有的，用户在此环境下客户端连接可以不通过TCP/IP而直接使用Unix socket来连接MySQL。</li></ul></li></ul><h3 id="MySQL-Server系统架构"><a href="#MySQL-Server系统架构" class="headerlink" title="MySQL Server系统架构"></a>MySQL Server系统架构</h3><p>第一层通常叫做SQL Layer，在 MySQL 数据库系统处理底层数据之前的所有工作都是在这一层完成的，包括权限判断，sql 解析，执行计划优化， query cache 的处理等等;<br>第二层就是存储引擎层，我们通常叫做 Storage Engine Layer，也就是底层数据存取操作实现部分，由多种存储引擎共同组成<br><img src="https://github.com/Cynaith/Java-Daily-Interview/blob/master/MySQL/MySQL%E6%9E%B6%E6%9E%84.png" alt="MySQL架构"></p><ul><li>SQL Layer<ul><li>初始化模块</li><li>核心API</li><li>网络交互模块</li><li>Client &amp; Server交互协议模块</li><li>用户模块</li><li>访问控制模块</li><li>连接管理、连接进程和线程管理</li><li>Query解析和转发模块</li><li>Query Cache模块</li><li>Query优化器模块</li><li>表变更模块</li><li>表维护模块</li><li>状态管理模块</li><li>表管理器</li><li>日志记录模块</li><li>复制模块</li><li>存储引擎接口模块</li></ul></li></ul>]]></content>
+      
+      
+      <categories>
+          
+          <category> MySQL性能调优 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> MySQL </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>MySQL性能调优-1.MySQL基本介绍</title>
+      <link href="/2020/06/06/MySQL%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98-1-MySQL%E5%9F%BA%E6%9C%AC%E4%BB%8B%E7%BB%8D/"/>
+      <url>/2020/06/06/MySQL%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98-1-MySQL%E5%9F%BA%E6%9C%AC%E4%BB%8B%E7%BB%8D/</url>
+      
+        <content type="html"><![CDATA[<h2 id="MySQL基本介绍"><a href="#MySQL基本介绍" class="headerlink" title="MySQL基本介绍"></a>MySQL基本介绍</h2><h3 id="功能比较"><a href="#功能比较" class="headerlink" title="功能比较"></a>功能比较</h3><p>在可编程支持方面，MySQL 和其他数据库相比还有一定的差距， 虽然最新版的MySQL 已经开始提供一些简单的可编程支持，<br>如开始支持 Procedure，Function，Trigger 等，但 是所支持的功能还比较有限， 和其他几大商用数据库管理系统相比，<br>还存在较大的不足如。Oracle 有强大的 PL/SQL，SQL Server 有 T-SQL，PostGreSQL 也有功能很完善的 PL/PGSQL 的支持。</p><h3 id="易用性比较"><a href="#易用性比较" class="headerlink" title="易用性比较"></a>易用性比较</h3><p>从系统易用性方面来比较， 每一个使用过MySQL的用户都能够明显地感觉出MySQL在这<br>方面与其他通用数据库管理系统之间的优势所在。 尤其是相对于一些大型的商业数据库理管系统如 Oracle、DB2 以及 Sybase 来说，<br>对于普通用户来说，操作的难易程度明显不处于一个级别。MySQL 一直都奉行简单易用的原则，也正是靠这一特性，<br>吸引了大量的初级数据库用户最终选择了 MySQL。也正是这一批又一批的初级用户，在经过了几年时间的成长之后，<br>很多都已经成为了高级数据库用户，而且也一直都在伴随着MySQL 成长。</p><h3 id="性能比较"><a href="#性能比较" class="headerlink" title="性能比较"></a>性能比较</h3><p>性能方面， 一直是MySQL 引以为自豪的一个特点。 在权威的第三方评测机构多次测试较量各种数据库 TPCC 值的过程中，<br>MySQL 一直都有非常优异的表现，而且在其他所有商用的 通用数据库管理系统中，仅仅只有Oracle 数据库能够与其一较高下。<br>至于各种数据库详细 的性能数据， 我这里就不便记录， 大家完全可以通过网上第三方评测机构公布的数据了具解体细节信息。</p><p>MySQL 一直以来奉行一个原则，那就是在保证足够的稳定性的前提下，尽可能的提高自身的处理能力。 也就是说，<br>在性能和功能方面MySQL 第一考虑的要素主要还是性能，MySQL 希望自己是一个在满足客户99%的功能需求的前提下，<br>花掉剩下的大部分精力来性能努力， 而不是希望自己是成为一个比其他任何数据库的功能都要强大的数据库产品。</p><h3 id="可靠性"><a href="#可靠性" class="headerlink" title="可靠性"></a>可靠性</h3><p>关于可靠性的比较， 并没有太多详细的评测比较数据， 但是从目前业界的交流中可了以解到，<br>几大商业厂商的数据库的可靠性肯定是没有太多值得怀疑的。 但是做为开源数据管库 理系统的代表，MySQL也有非常优异的表现，<br>而并不是像有些人心中所怀疑的那样，因为不是商业厂商所提供，就会不够稳定不够健壮。从当前最火的Facebook这样大型的网站都是使用 MySQL 数据库，<br>就可以看出，MySQL在稳定可靠性方面，并不会比我们的商业厂商的产品有太多逊色。而且排在全球前10位的大型网站里面，<br>大部分都有部分业务是运行在MySQL 数据库环境上，如 Yahoo，Google 等。</p><h3 id="MySQL适用场景"><a href="#MySQL适用场景" class="headerlink" title="MySQL适用场景"></a>MySQL适用场景</h3><ul><li><p>Web 网站系统</p><ul><li>Web 站点，是 MySQL 最大的客户群，也是MySQL 发展史上最为重要的支撑力量，这一点<br>在最开始的 MySQL Server 简介部分就已经说明过。<br>MySQL 之所以能成为 Web 站点开发者们最青睐的数据库管理系统， 是因为MySQL 数据库 的安装配置都非常简单，使用过程中的维护也不像很多大型商业数据库管理系统那么复杂， 而且性能出色。还有一个非常重要的原因就是MySQL 是开放源代码的，完全可以免费使用。</li></ul></li><li><p>日志记录系统</p><ul><li>MySQL 数据库的插入和查询性能都非常的高效，如果设计地较好，在使用 MyISAM 存储<br>引擎的时候， 两者可以做到互不锁定， 达到很高的并发性能。 所以， 对需要大量的插入和查询日志记录的系统来说，MySQL 是非常不错的选择。 比如处理用户的登录日志， 操作日志等，都是非常适合的应用场景。</li></ul></li><li><p>数据仓库系统</p><ul><li>随着现在数据仓库数据量的飞速增长， 我们需要的存储空间越来越大。 数据量的不增断长，<br>使数据的统计分析变得越来越低效，也越来越困难。 怎么办?这里有几个主要的解决思路， 一个是采用昂贵的高性能主机以提高计算性能，<br>用高端存储设备提高I/O 性能，效果理想，但是成本非常高;第二个就是通过将数据复制到多台使用大容量硬盘的廉价pc server 上，<br>以提高整体计算性能和I/O 能力， 效果尚可， 存储空间有一定限制， 成本低廉; 第三个，通过将数据水平拆分，<br>使用多台廉价的pc server 和本地磁盘来存放数据， 每台机器上面都 只有所有数据的一部分，解决了数据量的问题，所有pc server一起并行计算，<br>也解决了计算能力问题， 通过中间代理程序调配各台机器的运算任务， 既可以解决计算性能问题又可以解决 I/O 性能问题，成本也很低廉。<br>在上面的三个方案中，第二和第三个的实现，MySQL都有较大的优势。 通过MySQL的简单复制功能， 可以很好的将数据从一台主机复制到另外一台，<br>不仅仅在局域网内可以复制， 在广域网同样可以。 当然，很多人可能会说，其他的数据库同样也可以做到， 不是只有 MySQL 有这样的功能。<br>确实， 很多数据库同样能做到， 但是MySQL 是免费的，其他数据库大多都是按照主机数量或者 cpu 数量来收费，<br>当我们使用大量的 pc server 的时候，license 费用相当惊人。第一个方案，基本上所有数据库系统都能够实现，<br>但是其高昂的成本并不是每一个公司都能够承担的。</li></ul></li><li><p>嵌入式系统</p><ul><li>嵌入式环境对软件系统最大的限制是硬件资源非常有限， 在嵌入式环境下运行的软系件统，必须是轻量级低消耗的软件。<br>MySQL 在资源的使用方面的伸缩性非常大，可以在资源非常充裕的环境下运行，也可以在资源非常少的环境下正常运行。<br>它对于嵌入式环境来说，是一种非常合适的数据库系统， 而且 MySQL 有专门针对于嵌入式环境的版本。</li></ul></li></ul>]]></content>
+      
+      
+      <categories>
+          
+          <category> MySQL性能调优 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> MySQL </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>图解HTTP-7-确保Web安全的HTTPS</title>
       <link href="/2020/05/26/%E5%9B%BE%E8%A7%A3HTTP-%E7%A1%AE%E4%BF%9DWeb%E5%AE%89%E5%85%A8%E7%9A%84HTTPS/"/>
       <url>/2020/05/26/%E5%9B%BE%E8%A7%A3HTTP-%E7%A1%AE%E4%BF%9DWeb%E5%AE%89%E5%85%A8%E7%9A%84HTTPS/</url>
