@@ -2,9 +2,9 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>图解HTTP-1-了解Web及网络基础 | Cynaith Blog</title>
-  <meta name="keywords" content=" 计算机网络 ">
-  <meta name="description" content="图解HTTP-1-了解Web及网络基础 | Cynaith Blog">
+  <title>MySQL性能调优-9.MySQL数据库Schema设计的性能优化 | Cynaith Blog</title>
+  <meta name="keywords" content=" MySQL ">
+  <meta name="description" content="MySQL性能调优-9.MySQL数据库Schema设计的性能优化 | Cynaith Blog">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="description" content="第九章 MySQL数据库Schema设计的性能优化高效的模型设计数据库Scnema满足的范式级别越高则该Schema设计的越优秀。  适度冗余 - 让Query尽量减少Join 大字段垂直分拆 - summary表优化与适度冗余相反，将大字段并且访问频率相对少的字段拆分。 大表水平拆分 - 基于类型的分拆优化如通过标识字段标识出管理员发布或是普通用户发布，减少检索成本。 统计表 - 准实时优化">
 <meta property="og:type" content="article">
@@ -616,9 +616,9 @@
 </aside>
 <div class="post">
     <div class="pjax">
-        <article id="post-图解HTTP-了解Web及网络基础" class="article article-type-post" itemscope itemprop="blogPost">
+        <article id="post-MySQL性能调优-9-MySQL数据库Schema设计的性能优化" class="article article-type-post" itemscope itemprop="blogPost">
     
-        <h1 class="article-title">图解HTTP-1-了解Web及网络基础</h1>
+        <h1 class="article-title">MySQL性能调优-9.MySQL数据库Schema设计的性能优化</h1>
     
     <div class="article-meta">
         
@@ -626,26 +626,26 @@
         
         <span class="book">
             
-                <a  data-rel="图解HTTP">图解HTTP</a>
+                <a  data-rel="MySQL调优">MySQL调优</a>
             
         </span>
         
         
         <span class="tag">
             
-            <a class="color1">计算机网络</a>
+            <a class="color1">MySQL</a>
             
         </span>
         
     </div>
     <div class="article-meta">
         
-        创建时间:<time class="date" title='更新时间: 2020-05-25 16:23:20'>2020-05-25 00:26</time>
+        创建时间:<time class="date" title='更新时间: 2020-06-08 02:37:28'>2020-06-08 02:37</time>
         
     </div>
     <div class="article-meta">
         
-        <span>字数:1.5k</span>
+        <span>字数:938</span>
         
         
         <span id="busuanzi_container_page_pv">
@@ -675,7 +675,7 @@
     
     <div class="toc-ref">
     
-        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#网络基础TCP-IP"><span class="toc-text">网络基础TCP&#x2F;IP</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#与HTTP关系密切的IP、TCP、DNS"><span class="toc-text">与HTTP关系密切的IP、TCP、DNS</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#URI和URL"><span class="toc-text">URI和URL</span></a></li></ol>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#第九章-MySQL数据库Schema设计的性能优化"><span class="toc-text">第九章 MySQL数据库Schema设计的性能优化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#高效的模型设计"><span class="toc-text">高效的模型设计</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#合适的数据类型"><span class="toc-text">合适的数据类型</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#数字日期类型"><span class="toc-text">数字日期类型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#字符存储类型"><span class="toc-text">字符存储类型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#规范的对象命名"><span class="toc-text">规范的对象命名</span></a></li></ol></li></ol></li></ol>
     
 <style>
     .left-col .switch-btn,
@@ -691,109 +691,37 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <h2 id="网络基础TCP-IP"><a href="#网络基础TCP-IP" class="headerlink" title="网络基础TCP/IP"></a>网络基础TCP/IP</h2><blockquote>
-<p>通常使用的网络是在TCP/IP协议族的基础上运作的，而HTTP属于它内部的一个子集</p>
-</blockquote>
+        <h2 id="第九章-MySQL数据库Schema设计的性能优化"><a href="#第九章-MySQL数据库Schema设计的性能优化" class="headerlink" title="第九章 MySQL数据库Schema设计的性能优化"></a>第九章 MySQL数据库Schema设计的性能优化</h2><h3 id="高效的模型设计"><a href="#高效的模型设计" class="headerlink" title="高效的模型设计"></a>高效的模型设计</h3><p>数据库Scnema满足的范式级别越高则该Schema设计的越优秀。</p>
 <ul>
-<li>TCP/IP协议族</li>
+<li>适度冗余 - 让Query尽量减少Join</li>
+<li>大字段垂直分拆 - summary表优化<br>与适度冗余相反，将大字段并且访问频率相对少的字段拆分。</li>
+<li>大表水平拆分 - 基于类型的分拆优化<br>如通过标识字段标识出管理员发布或是普通用户发布，减少检索成本。</li>
+<li>统计表 - 准实时优化  </li>
 </ul>
-<p>计算机与网络设备要相互通信，双方就必须基于相同的方法。我们把这种规则称为协议(protocol)。</p>
-<blockquote>
-<p>TCP/IP是互联网相关的各类协议族的总称(IP、PPPoE、DNS、UDP、FTP、SNMP、HTTP、FDDI、TCP、ICMP、IEEE 802.3)</p>
-</blockquote>
-<ul>
-<li>TCP/IP的分层管理</li>
-</ul>
-<p>TCP/IP协议族里最重要的一点就是分层。TCP/IP协议族按层次分别分为以下4层：<strong>应用层、传输层、网络层和数据链路层</strong> 。</p>
-<blockquote>
-<p>层次化后，处于引用层上的应用可以只考虑分派给自己的任务，不需要弄清对方在那个地方和传输路线等问题。</p>
-</blockquote>
-<ul>
-<li>应用层</li>
-</ul>
-<p>应用层决定了向用户提供应用服务时通信的活动</p>
-<blockquote>
-<p>TCP/IP 协议族内预存了各类通用的应用服务。比如，FTP(File Transfer Protocol，文件传输协议)和 DNS(Domain Name System，域 名系统)服务就是其中两类。</p>
-<p>HTTP 协议也处于该层。</p>
-</blockquote>
-<ul>
-<li>传输层</li>
-</ul>
-<p>传输层对上层应用层，提供处于网络连接中的两台计算机之间的数据传输。<br>传输层有两个性质不同的协议：TCP(Transmission Control Protocol，传输控制协议)和 UDP(User Data Protocol，用户数据报协议)。</p>
-<ul>
-<li>网络层</li>
-</ul>
-<p>网络层用来处理在网络上流动的数据包。数据包是网络传输的最小数据单位。<br>该层规定了通过怎样的路径(所谓的传输路线)到达对方计算机，并把数据包传送给对方。</p>
-<p>与对方计算机之间通过多台计算机或网络设备进行传输时，网络层所起的作用就是在众多的选项内选择一条传输路线。</p>
-<ul>
-<li>链路层</li>
-</ul>
-<p>用来处理连接网络的硬件部分。包括控制操作系统、硬件的设备驱动、NIC(Network Interface Card，网络适配器，即网卡)，<br>及光纤等物理可见部分(还包括连接器等一切传输媒介)。硬件上的范畴均在链路层的作用范围之内。</p>
-<ul>
-<li>TCP/IP通信传输流</li>
-</ul>
-<ol>
-<li>客户端由应用层发出一个HTTP请求。</li>
-<li>接着传输层把应用层处收到的数据进行分割，并在各个报文上打上标记序号及端口号转发给网络层。(并在此层打上TCP首部信息)</li>
-<li>网络层增加作为通信目的地的MAC地址后转发给链路层。(并在此层打上IP首部信息)</li>
-<li>接收端的服务器在链路层接收到数据。(在客户端打上以太网首部信息，在接收端把以太网首部信息消去)</li>
-<li>按序向上传输，直至应用层，才能算真正接收到由客户端发过来的HTTP请求.(每经过一层时会把对应的首部消去)</li>
+<h3 id="合适的数据类型"><a href="#合适的数据类型" class="headerlink" title="合适的数据类型"></a>合适的数据类型</h3><ol>
+<li>通过选用更『小』的数据类型减少存储空间。</li>
+<li>通过更合适的数据类型加速数据的比较。</li>
 </ol>
-<h2 id="与HTTP关系密切的IP、TCP、DNS"><a href="#与HTTP关系密切的IP、TCP、DNS" class="headerlink" title="与HTTP关系密切的IP、TCP、DNS"></a>与HTTP关系密切的IP、TCP、DNS</h2><ul>
-<li><strong>负责传输的IP协议</strong><blockquote>
-<p>IP网际协议属于网络层。</p>
-</blockquote>
-</li>
-</ul>
-<p>IP协议的作用是把各种数据包传送给对方。而要保证确实传送到对方那里，则需要满足各类条件。其中两个重要的条件是IP地址和MAC地址(Media Access Control Address)。<br>IP地址指明节点被分配到的地址，MAC地址是指网卡所属的固定地址。IP地址可以和MAC地址进行配对。IP地址可以变换，但MAC地址基本不会改变。<br>使用ARP协议凭借MAC地址进行通信<br>IP之间的通信依赖MAC地址，在网络上，通常是经过多台计算机和网络设备中转才能连接到对方。而在进行中转时，会利用下一站中转设备的MAC地址来搜索下一个中转目标。这时会采用ARP协议。</p>
-<blockquote>
-<p>ARP协议是一种用以解析地址的协议，根据通信方的IP地址就可以反查出对应的MAC地址。</p>
-</blockquote>
-<ul>
-<li><strong>确保可靠的TCP协议</strong></li>
-</ul>
-<blockquote>
-<p>TCP位于传输层，提供可靠的字节流服务。</p>
-<blockquote>
-<p>什么是字节流服务？<br/><br>为了方便传输，将大块的数据分割成以报文段(segment)为单位的数据包进行管理。</p>
-</blockquote>
-<blockquote>
-<p>什么是可靠的传输服务？<br/><br>能够把数据准确可靠地传给对方。</p>
-</blockquote>
-<p>TCP协议为了更容易传送大数据才把数据分割，而TCP协议能够确认数据最终是否送达到对方。</p>
-</blockquote>
-<p>为了准确无误地将数据送达目标处，TCP协议采用了三次握手策略。握手过程中使用了TCP的标志–SYN和ACK</p>
+<h4 id="数字日期类型"><a href="#数字日期类型" class="headerlink" title="数字日期类型"></a>数字日期类型</h4><p>对于数字的存储，一般使用到浮点型数据的场合也不应该太多。主要出于两个原因，一个是浮点型 数据本身实际上是一个并不精确的数字，只是一个近似值，<br>另一个原因就是完全可以通过乘以一个固定 的系数转换为整型数据来存放。这样不仅可以解决数据不精确的问题，同时也让数据的处理更为高效。  </p>
+<p>时间存储格式总类并不是太多，我们常用的主要就是 DATETIME，DATE 和 TIMESTAMP 这三种了。从存储空间来看 TIMESTAMP 最少，四个字节，<br>而其他两种数据类型都是八个字节，多了一倍。而TIMESTAMP 的 缺点在于他只能存储从1970 年之后的时间，而另外两种时间类型可以存放最早从1001年开始的时间。<br>如果有需要存放早于 1970 年之前的时间的需求，我们必须放弃 TIMESTAMP 类型，但是只要我们不需要使用 1970 年之前的时间，最好尽量使用 TIMESTAMP 来减少存储空间的占用。</p>
+<h4 id="字符存储类型"><a href="#字符存储类型" class="headerlink" title="字符存储类型"></a>字符存储类型</h4><p><strong>CHAR</strong>类型属于静态长度类型，不管实际存放多长数据，后面都会用空格补齐，所以实际数据中需要在最后存储空格，则不能使用CHAR类型。  </p>
+<p><strong>VARCHAR</strong>类型属于动态存储长度类型，5.0.3版本前最大只能存255字符，此后可以存储65535 bytes的数据。<br>注: MySQL 会在每个 VARCHAR 数据中使用 1 个或 者 2 个字节用来存放 VARCHAR 数据的实际长度，当我们的实际数据在255字节之内的时候，<br>会使用 1 字节 来存放实际长度，而大于 255 字节的时候，则需要使用 2 字节来存放。  </p>
+<p><strong>TINYTEXT，TEXT，MEDIUMTEXT 和 LONGTEXT</strong> 这四种类型同属于一种存储方式，都是动态存储长度类型。<br>与CHAR和VARCHAR的不同:</p>
 <ol>
-<li>发送端首先发送一个带SYN标志的数据包给对方。</li>
-<li>接收端收到后，回传一个带有SYN/ACK标志的数据包以传达确认信息。</li>
-<li>发送端再回传一个带ACK标志的包，代表握手结束。</li>
+<li>不能设置默认值</li>
+<li>只有TEXT可以设置大小</li>
+<li>这四种类型的索引必须指定前缀长度 </li>
 </ol>
-<ul>
-<li><strong>负责域名解析的DNS服务</strong> <blockquote>
-<p>和HTTP协议一样，位于应用层</p>
-</blockquote>
-</li>
-</ul>
-<p>DNS协议提供通过域名查找IP地址，或逆向从IP地址反查域名的服务。     </p>
-<h2 id="URI和URL"><a href="#URI和URL" class="headerlink" title="URI和URL"></a>URI和URL</h2><ul>
-<li>URI 统一资源标识符(Uniform Resource Identifier)<blockquote>
-<p>Uniform 规定统一格式可方便处理多种不同类型的资源。</p>
-</blockquote>
-</li>
-</ul>
-<blockquote>
-<p>Resource 资源的定义是”可标识的任何东西”。除了文档文件、图像或服务(例 如当天的天气预报)等能够区别于其他类型的，全都可作为资源。另外，资源不仅可以是单一的，也可以是多数的集合体。</p>
-</blockquote>
-<blockquote>
-<p>Identifier 表示可标识的对象</p>
-</blockquote>
-<ul>
-<li><p>URL用字符串标识某一互联网资源，而URL表示资源的地点(互联网上所处的位置)。URL是URI的子集。</p>
-</li>
-<li><p>URI格式</p>
-</li>
-</ul>
-<p><code>http://user:pass@www.example.jp:80/dir/index.htm?uid=1#ch1</code><br>http:// 协议方案名<br>user:pass 登陆信息(认证)<br><a href="http://www.example.jp" target="_blank" rel="noopener">www.example.jp</a> 服务器地址<br>80 服务器端口号<br>dir/index.htm 带层次的文件路径<br>uid=1 查询字符串<br>ch1 片段标识符  </p>
+<p><strong>BIT</strong>类型: 默认大小为1 最大为64bits  </p>
+<p><strong>SET和ENUM</strong>类型使用在较少变化状态并且值比较少的字段。</p>
+<h4 id="规范的对象命名"><a href="#规范的对象命名" class="headerlink" title="规范的对象命名"></a>规范的对象命名</h4><ol>
+<li>数据库和表名应尽可能和所服务的业务模块名一致。</li>
+<li>服务于同一子模块的一类表尽量以子模块名(或部分单词)为前缀或后缀。</li>
+<li>表名应尽量包含与所存放数据相对应的单词。</li>
+<li>字段名称也尽量保持和实际数据相对应。</li>
+<li>索引名称尽量包含所有的索引键字段名或者缩写，各字段名在索引名中的顺序应与索引键在 索引中的索引顺序一致。</li>
+<li>约束等其他对象也应该尽可能包含所属表或其他对象的名称，以表名各自关系。</li>
+</ol>
 
       
        <hr><span style="font-style: italic;color: gray;"> 转载请注明来源，欢迎对文章中的引用来源进行考证，欢迎指出任何有错误或不够清晰的表达。可以在下面评论区评论，也可以邮件至 yanglau0527@gmail.com </span>
@@ -807,12 +735,12 @@
 
 
 <div class="article_copyright">
-    <p><span class="copy-title">文章标题:</span>图解HTTP-1-了解Web及网络基础</p>
-    <p><span class="copy-title">文章字数:</span><span class="post-count">1.5k</span></p>
+    <p><span class="copy-title">文章标题:</span>MySQL性能调优-9.MySQL数据库Schema设计的性能优化</p>
+    <p><span class="copy-title">文章字数:</span><span class="post-count">938</span></p>
     <p><span class="copy-title">本文作者:</span><a  title="Cynaith">Cynaith</a></p>
-    <p><span class="copy-title">发布时间:</span>2020-05-25, 00:26:53</p>
-    <p><span class="copy-title">最后更新:</span>2020-05-25, 16:23:20</p>
-    <span class="copy-title">原始链接:</span><a class="post-url" href="/2020/05/25/%E5%9B%BE%E8%A7%A3HTTP-%E4%BA%86%E8%A7%A3Web%E5%8F%8A%E7%BD%91%E7%BB%9C%E5%9F%BA%E7%A1%80/" title="图解HTTP-1-了解Web及网络基础">https://cynaith.github.io/2020/05/25/%E5%9B%BE%E8%A7%A3HTTP-%E4%BA%86%E8%A7%A3Web%E5%8F%8A%E7%BD%91%E7%BB%9C%E5%9F%BA%E7%A1%80/</a>
+    <p><span class="copy-title">发布时间:</span>2020-06-08, 02:37:15</p>
+    <p><span class="copy-title">最后更新:</span>2020-06-08, 02:37:28</p>
+    <span class="copy-title">原始链接:</span><a class="post-url" href="/2020/06/08/MySQL%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98-9-MySQL%E6%95%B0%E6%8D%AE%E5%BA%93Schema%E8%AE%BE%E8%AE%A1%E7%9A%84%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" title="MySQL性能调优-9.MySQL数据库Schema设计的性能优化">https://cynaith.github.io/2020/06/08/MySQL%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98-9-MySQL%E6%95%B0%E6%8D%AE%E5%BA%93Schema%E8%AE%BE%E8%AE%A1%E7%9A%84%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/</a>
     <p>
         <span class="copy-title">版权声明:</span><i class="fa fa-creative-commons"></i> <a rel="license noopener" href="http://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank" title="CC BY-NC-SA 4.0 International" target = "_blank">"署名-非商用-相同方式共享 4.0"</a> 转载请保留原文链接及作者。
     </p>
